@@ -5,7 +5,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const { registerValidator, loginValidator } = require('./middleware/validators');
-
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 dotenv.config();
 
 const app = express();
@@ -21,7 +22,10 @@ const path = require('path');
 const fs = require('fs');
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
