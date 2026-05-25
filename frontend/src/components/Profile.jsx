@@ -16,9 +16,9 @@ export const Profile = ({ userId = null, isModal = false, onClose = null }) => {
   const profileUserId = userId || currentUser?.id;
   const isOwnProfile = !userId || userId === currentUser?.id;
 
-  useEffect(() => {
-    fetchProfile();
-  }, [profileUserId]);
+useEffect(() => {
+  fetchProfile();
+}, []);
 
   const fetchProfile = async () => {
     try {
