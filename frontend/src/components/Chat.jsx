@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import { userService, messageService, roomService } from '../services/api';
-import { FiUsers, FiLogOut, FiPaperclip, FiFile, FiUser, FiSearch, FiX, FiMoreVertical } from 'react-icons/fi';
+import {FiSend, FiUsers, FiLogOut, FiPaperclip, FiFile, FiUser, FiSearch, FiX, FiMoreVertical } from 'react-icons/fi';
 import { Profile } from './Profile';
 import './Chat.css';
 
@@ -16,7 +16,7 @@ export const ChatApp = ({ onLogout }) => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [recentChats, setRecentChats] = useState([]);
   const [filteredRecentChats, setFilteredRecentChats] = useState([]);
-  // const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
   const [showUserList, setShowUserList] = useState(false);
