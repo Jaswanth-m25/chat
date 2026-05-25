@@ -12,7 +12,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (token && user) {
-      const socketInstance = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000', {
+      const socketInstance = io(process.env.REACT_APP_SOCKET_URL || 'https://chat-backend-da9m.onrender.com', {
         auth: {
           token
         }

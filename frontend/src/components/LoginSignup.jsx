@@ -95,7 +95,7 @@ const LoginSignup = () => {
         
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/auth/request-signup-otp', {
+            const response = await fetch('https://chat-backend-da9m.onrender.com/api/auth/request-signup-otp', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ const LoginSignup = () => {
         
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/auth/login', {
+            const response = await fetch('https://chat-backend-da9m.onrender.com/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -186,10 +186,10 @@ if (data.success) {
             let body = {};
             
             if (otpPurpose === "signup") {
-                endpoint = 'http://localhost:5000/api/auth/resend-signup-otp';
+                endpoint = 'https://chat-backend-da9m.onrender.com/api/auth/resend-signup-otp';
                 body = { email: tempEmail };
             } else {
-                endpoint = 'http://localhost:5000/api/auth/resend-login-otp';
+                endpoint = 'https://chat-backend-da9m.onrender.com/api/auth/resend-login-otp';
                 body = { email: tempEmail };
             }
             
@@ -226,7 +226,7 @@ if (data.success) {
         
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/auth/signup', {
+            const response = await fetch('https://chat-backend-da9m.onrender.com/api/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -273,7 +273,7 @@ const completeLogin = async () => {
 
     try {
         const response = await fetch(
-            'http://localhost:5000/api/auth/verify-login-otp',
+            'https://chat-backend-da9m.onrender.com/api/auth/verify-login-otp',
             {
                 method: 'POST',
                 headers: {

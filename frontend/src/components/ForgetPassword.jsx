@@ -89,7 +89,7 @@ const ForgetPassword = ({ onBackToLogin }) => {
 
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+            const response = await fetch('https://chat-backend-da9m.onrender.com/api/auth/forgot-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ const ForgetPassword = ({ onBackToLogin }) => {
 
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/auth/resend-password-otp', {
+            const response = await fetch('https://chat-backend-da9m.onrender.com/api/auth/resend-password-otp', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -156,7 +156,7 @@ const ForgetPassword = ({ onBackToLogin }) => {
 
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/auth/reset-password', {
+            const response = await fetch('https://chat-backend-da9m.onrender.com/api/auth/reset-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

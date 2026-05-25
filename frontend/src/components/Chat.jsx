@@ -651,14 +651,14 @@ const showSenderInfo =
                         
                       {msg.messageType === 'image' ? (
                         <img 
-                          src={`http://localhost:5000${msg.content}`} 
+                          src={`https://chat-backend-da9m.onrender.com/${msg.content}`} 
                           alt="uploaded" 
                           className="message-image"
-                          onClick={() => handleImageClick(`http://localhost:5000${msg.content}`)}
+                          onClick={() => handleImageClick(`https://chat-backend-da9m.onrender.com/${msg.content}`)}
                         />
                       ) : msg.messageType === 'file' ? (
                         <a 
-                          href={`http://localhost:5000${msg.content}`} 
+                          href={`https://chat-backend-da9m.onrender.com/${msg.content}`} 
                           target="_blank" 
                           rel="noreferrer"
                           className="message-file-link"
