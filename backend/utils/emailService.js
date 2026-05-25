@@ -18,6 +18,13 @@ const transporter = nodemailer.createTransport({
     greetingTimeout: 10000,
     socketTimeout: 10000
 });
+transporter.verify((error, success) => {
+    if (error) {
+        console.log("SMTP ERROR:", error);
+    } else {
+        console.log("SMTP SERVER READY");
+    }
+});
 
 // Generate random OTP
 const generateOTP = () => {
