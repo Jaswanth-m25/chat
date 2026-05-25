@@ -52,8 +52,12 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Internal server error' });
 });
+app.get('/', (req, res) => {
+  res.send('Chat backend running successfully');
+});
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
