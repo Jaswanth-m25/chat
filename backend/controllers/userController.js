@@ -1,8 +1,6 @@
 const User = require('../models/User');
 const Message = require('../models/Message');
 const mongoose = require('mongoose');
-const path = require('path');
-const fs = require('fs');
 
 // Get all users (except current user)
 exports.getAllUsers = async (req, res) => {
@@ -60,28 +58,19 @@ exports.uploadProfilePicture = async (req, res) => {
 
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (!allowedTypes.includes(req.file.mimetype)) {
-      // Delete uploaded file
-      fs.unlinkSync(req.file.path);
-      return res.status(400).json({ message: 'Invalid file type. Only images are allowed.' });
-    }
+if (!allowedTypes.includes(req.file.mimetype)) {
+  return res.status(400).json({
+    message: 'Invalid file type. Only images are allowed.'
+  });
+}
 
     // Validate file size (max 5MB)
-    if (req.file.size > 5 * 1024 * 1024) {
-      fs.unlinkSync(req.file.path);
-      return res.status(400).json({ message: 'File size too large. Maximum 5MB allowed.' });
-    }
-
-    const fileUrl = `/uploads/${req.file.filename}`;
-
-    // Delete old avatar if exists
-    const currentUser = await User.findById(req.params.id);
-    if (currentUser.avatar) {
-      const oldFilePath = path.join(__dirname, '..', currentUser.avatar);
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
-    }
+if (req.file.size > 5 * 1024 * 1024) {
+  return res.status(400).json({
+    message: 'File size too large. Maximum 5MB allowed.'
+  });
+}
+   const fileUrl = req.file.path;
 
     // Update user with new avatar
 const user = await User.findByIdAndUpdate(
@@ -95,9 +84,7 @@ const user = await User.findByIdAndUpdate(
       user
     });
   } catch (error) {
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
+
     res.status(500).json({ message: 'Failed to upload profile picture', error: error.message });
   }
 };
