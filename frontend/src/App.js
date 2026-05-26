@@ -5,7 +5,9 @@ import { SocketProvider } from './context/SocketContext';
 
 import LoginSignup from './components/LoginSignup';
 import { ChatApp } from './components/Chat';
-
+import { useUser } from "@clerk/clerk-react";
+import { useEffect } from "react";
+import axios from "axios";
 import './App.css';
 
 import {
@@ -23,6 +25,45 @@ const ChatWithProviders = () => {
 };
 
 function App() {
+
+  const { user, isSignedIn } = useUser();
+
+  useEffect(() => {
+
+    const syncUser = async () => {
+
+      if (!user) return;
+
+      try {
+
+        console.log("SYNCING USER");
+
+        const response = await axios.post(
+          'https://chat-backend-da9m.onrender.com/api/clerk/sync-user',
+          {
+            clerkId: user.id,
+            username: user.fullName,
+            email: user.primaryEmailAddress?.emailAddress,
+            avatar: user.imageUrl
+          }
+        );
+
+        console.log(response.data);
+
+      } catch (error) {
+
+        console.error("SYNC ERROR", error);
+      }
+    };
+
+    if (isSignedIn) {
+      syncUser();
+    }
+
+  }, [isSignedIn, user]);
+
+
+
   return (
     <Router>
       <Routes>
