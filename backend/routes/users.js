@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const authenticateToken = require('../middleware/auth');
+// const authenticateToken = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
 
@@ -22,24 +22,23 @@ const upload = multer({
 });
 
 // Get all users
-router.get('/', authenticateToken, userController.getAllUsers);
+router.get('/', userController.getAllUsers);
 
 // Get online users
-router.get('/online', authenticateToken, userController.getOnlineUsers);
+router.get('/online', userController.getOnlineUsers);
 
 // Search users
-router.get('/search', authenticateToken, userController.searchUsers);
+router.get('/search', userController.searchUsers);
 
 // Get recent chats
-router.get('/recent-chats', authenticateToken, userController.getRecentChats);
+router.get('/recent-chats', userController.getRecentChats);
 
 // Get user by ID
-router.get('/:id', authenticateToken, userController.getUserById);
+router.get('/:id', userController.getUserById);
 
 // Update profile
-router.put('/profile/:id', authenticateToken, userController.updateProfile);
+router.put('/profile/:id',userController.updateProfile);
 
 // Upload profile picture
-router.post('/upload-profile-pic/:id', authenticateToken, upload.single('profilePic'), userController.uploadProfilePicture);
-
+router.post('/upload-profile-pic/:id', upload.single('profilePic'), userController.uploadProfilePicture);
 module.exports = router;
