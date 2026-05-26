@@ -4,6 +4,8 @@ const router = express.Router();
 const User = require('../models/User');
 
 router.post('/sync-user', async (req, res) => {
+    console.log("SYNC USER HIT");
+    console.log(req.body);
     try {
 
         const {
