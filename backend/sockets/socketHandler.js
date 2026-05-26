@@ -9,12 +9,29 @@ const activeUsers = {};
 const typingUsers = {};
 
 const socketHandler = (io) => {
-io.use((socket, next) => {
+io.use(async (socket, next) => {
 
-  socket.userId = socket.handshake.auth.userId;
-  socket.username = socket.handshake.auth.username;
+  try {
 
-  next();
+    socket.clerkId = socket.handshake.auth.userId;
+    socket.username = socket.handshake.auth.username;
+
+    const mongoUser = await User.findOne({
+      clerkId: socket.clerkId
+    });
+
+    if (!mongoUser) {
+      return next(new Error("MongoDB user not found"));
+    }
+
+    socket.userId = mongoUser._id.toString();
+
+    next();
+
+  } catch (error) {
+
+    next(new Error("Socket authentication failed"));
+  }
 });
 
   io.on('connection', async (socket) => {
