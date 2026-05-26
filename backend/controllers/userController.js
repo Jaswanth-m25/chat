@@ -7,7 +7,7 @@ const fs = require('fs');
 // Get all users (except current user)
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({ _id: { $ne: req.user.id } }).select('-password');
+    const users = await User.find().select('-password');
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch users', error: error.message });
@@ -37,7 +37,7 @@ exports.updateProfile = async (req, res) => {
     if (bio !== undefined) updateData.bio = bio;
 
     const user = await User.findByIdAndUpdate(
-      req.user.id,
+      req.params.id,
       updateData,
       { new: true }
     ).select('-password');
@@ -75,7 +75,7 @@ exports.uploadProfilePicture = async (req, res) => {
     const fileUrl = `/uploads/${req.file.filename}`;
 
     // Delete old avatar if exists
-    const currentUser = await User.findById(req.user.id);
+    const currentUser = await User.findById(req.params.id);
     if (currentUser.avatar) {
       const oldFilePath = path.join(__dirname, '..', currentUser.avatar);
       if (fs.existsSync(oldFilePath)) {
@@ -84,8 +84,8 @@ exports.uploadProfilePicture = async (req, res) => {
     }
 
     // Update user with new avatar
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
+const user = await User.findByIdAndUpdate(
+  req.params.id,
       { avatar: fileUrl },
       { new: true }
     ).select('-password');
@@ -133,58 +133,10 @@ exports.searchUsers = async (req, res) => {
 // Get recent chats
 exports.getRecentChats = async (req, res) => {
   try {
-    const userId = new mongoose.Types.ObjectId(req.user.id);
-    const recentMessages = await Message.aggregate([
-      {
-        $match: {
-          $or: [
-            { senderId: userId },
-            { receiverId: userId }
-          ]
-        }
-      },
-      { $sort: { createdAt: -1 } },
-      {
-        $group: {
-          _id: {
-            $cond: [
-              { $eq: ['$senderId', userId] },
-              '$receiverId',
-              '$senderId'
-            ]
-          },
-          lastMessage: { $first: '$content' },
-          lastMessageTime: { $first: '$createdAt' },
-          unreadCount: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    { $ne: ['$senderId', userId] },
-                    { $eq: ['$isRead', false] }
-                  ]
-                },
-                1,
-                0
-              ]
-            }
-          }
-        }
-      },
-      { $sort: { lastMessageTime: -1 } },
-      { $limit: 20 },
-      {
-        $lookup: {
-          from: 'users',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'userDetails'
-        }
-      }
-    ]);
-
-    res.json(recentMessages);
+    res.json([]);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch recent chats', error: error.message });
+    res.status(500).json({
+      message: 'Failed to fetch recent chats'
+    });
   }
 };

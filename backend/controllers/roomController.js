@@ -10,8 +10,8 @@ exports.createRoom = async (req, res) => {
       name,
       description,
       roomType,
-      createdBy: req.user.id,
-      members: [req.user.id, ...members]
+      createdBy: members[0],
+members: members
     });
 
     await room.save();
@@ -29,7 +29,7 @@ exports.createRoom = async (req, res) => {
 // Get all rooms
 exports.getAllRooms = async (req, res) => {
   try {
-    const rooms = await Room.find({ members: req.user.id })
+    const rooms = await Room.find()
       .populate('members', 'username avatar')
       .populate('createdBy', 'username');
 
