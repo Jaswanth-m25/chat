@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useUser } from "@clerk/clerk-react";
 import { userService } from '../services/api';
 import { FiX, FiCamera, FiEdit2, FiCheck } from 'react-icons/fi';
 import './Profile.css';
 
 export const Profile = ({ userId = null, isModal = false, onClose = null }) => {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser } = useUser();
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);

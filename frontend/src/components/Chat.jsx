@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useUser, useClerk } from "@clerk/clerk-react";
 import { useSocket } from '../context/SocketContext';
-import { useAuth } from '../context/AuthContext';
 import { userService, messageService, roomService } from '../services/api';
 import {FiSend, FiUsers, FiLogOut, FiPaperclip, FiFile, FiUser, FiSearch, FiX, FiMoreVertical } from 'react-icons/fi';
 import { Profile } from './Profile';
 import './Chat.css';
 
-export const ChatApp = ({ onLogout }) => {
-  const { user } = useAuth();
+export const ChatApp = () => {
+  const { user } = useUser();
+  const { signOut } = useClerk();
   const { socket, onlineUsers } = useSocket();
   const [activeChat, setActiveChat] = useState(null);
   const [message, setMessage] = useState('');
@@ -166,7 +167,7 @@ export const ChatApp = ({ onLogout }) => {
   // Handle private chat messages
   useEffect(() => {
     if (!socket) return;
-
+  
 socket.on('newPrivateMessage', (msg) => {
 
   const senderId = msg.senderId?._id || msg.senderId;
@@ -352,7 +353,7 @@ const handleUserClick = async (userId, username) => {
 
   const handleLogoutClick = () => {
     setShowDropdown(false);
-    onLogout();
+    signOut();
   };
 
   const isUserOnline = (userId) => onlineUsers.includes(userId);

@@ -1,22 +1,22 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import { useAuth } from './AuthContext';
+import { useUser } from "@clerk/clerk-react";
 
 const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
-  const { token, user } = useAuth();
+  const { user } = useUser();
+
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
 
   useEffect(() => {
-    if (token && user) {
-      const socketInstance = io(process.env.REACT_APP_SOCKET_URL || 'https://chat-backend-da9m.onrender.com', {
-        auth: {
-          token
-        }
-      });
+    if (user) {
+
+      const socketInstance = io(
+        process.env.REACT_APP_SOCKET_URL || 'https://chat-backend-da9m.onrender.com'
+      );
 
       socketInstance.on('connect', () => {
         console.log('Socket connected');
@@ -40,7 +40,7 @@ export const SocketProvider = ({ children }) => {
         socketInstance.disconnect();
       };
     }
-  }, [token, user]);
+  }, [user]);
 
   return (
     <SocketContext.Provider value={{ socket, onlineUsers, typingUsers }}>
@@ -51,8 +51,10 @@ export const SocketProvider = ({ children }) => {
 
 export const useSocket = () => {
   const context = useContext(SocketContext);
+
   if (!context) {
     throw new Error('useSocket must be used within SocketProvider');
   }
+
   return context;
 };

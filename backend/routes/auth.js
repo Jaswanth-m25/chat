@@ -3,16 +3,15 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Users = require('../models/User');
-const OTP = require('../models/OTP');
 // const fetchUser = require('../middleware/fetchUser');
-const verifyOTP = require('../middleware/verifyOTP');
-const { 
-    generateOTP, 
-    sendSignupOTP, 
-    sendLoginOTP,
-    sendPasswordResetOTP,
-    sendPasswordResetSuccess
-} = require('../utils/emailService');
+
+// const { 
+//     generateOTP, 
+//     sendSignupOTP, 
+//     sendLoginOTP,
+//     sendPasswordResetOTP,
+//     sendPasswordResetSuccess
+// } = require('../utils/emailService');
 
 const ADMIN_EMAIL = 'admin@shop.com';
 const ADMIN_PASSWORD = 'admin123';
@@ -21,509 +20,559 @@ const SALT_ROUNDS = 10;
 /* ========== SIGNUP FLOW ========== */
 
 // Step 1: Request OTP for signup
-router.post('/request-signup-otp', async (req, res) => {
-    try {
-        const { email, username, password } = req.body;
+// router.post('/request-signup-otp', async (req, res) => {
+//     try {
+//         const { email, username, password } = req.body;
 
-        // Validate required fields
-        if (!email || !username || !password) {
-            return res.status(400).json({
-                success: false,
-                errors: "All fields are required"
-            });
-        }
+//         // Validate required fields
+//         if (!email || !username || !password) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "All fields are required"
+//             });
+//         }
 
-        // Check if user already exists
-        let existingUser = await Users.findOne({ email: email });
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                errors: "Email already registered. Please login instead."
-            });
-        }
+//         // Check if user already exists
+//         let existingUser = await Users.findOne({ email: email });
+//         if (existingUser) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Email already registered. Please login instead."
+//             });
+//         }
 
-        // Validate password strength
-        if (password.length < 6) {
-            return res.status(400).json({
-                success: false,
-                errors: "Password must be at least 6 characters long"
-            });
-        }
+//         // Validate password strength
+//         if (password.length < 6) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Password must be at least 6 characters long"
+//             });
+//         }
 
-        const otp = generateOTP();
+//         const otp = generateOTP();
 
-        // Delete old OTPs
-        await OTP.deleteMany({ email: email, purpose: 'signup' });
+//         // Delete old OTPs
+//         await OTP.deleteMany({ email: email, purpose: 'signup' });
 
-        // Save OTP with user data
-        const otpRecord = new OTP({
-            email: email,
-            otp: otp,
-            purpose: 'signup',
-            userData: {
-                username: username,
-                password: password,
-                role: req.body.role || 'customer'
-            }
-        });
-        await otpRecord.save();
+//         // Save OTP with user data
+//         const otpRecord = new OTP({
+//             email: email,
+//             otp: otp,
+//             purpose: 'signup',
+//             userData: {
+//                 username: username,
+//                 password: password,
+//                 role: req.body.role || 'customer'
+//             }
+//         });
+//         await otpRecord.save();
 
-        // Send OTP via email
-        await sendSignupOTP(email, otp, username);
+//         // Send OTP via email
+//         try {
+//             await sendSignupOTP(email, otp, username);
+//         } catch (emailError) {
+//             console.error("Email sending failed:", emailError.message);
+//             // Still save OTP even if email fails, but inform user
+//             return res.status(500).json({
+//                 success: false,
+//                 errors: `Failed to send OTP: ${emailError.message}. Please check your email configuration.`
+//             });
+//         }
 
-        res.json({
-            success: true,
-            message: "OTP sent to your email. Please verify to complete signup.",
-            email: email
-        });
+//         res.json({
+//             success: true,
+//             message: "OTP sent to your email. Please verify to complete signup.",
+//             email: email
+//         });
 
-    } catch (error) {
-        console.error("Signup OTP Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Failed to send OTP. Please try again."
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("Signup OTP Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: `Failed to process signup: ${error.message}`
+//         });
+//     }
+// });
 
 // Step 2: Resend signup OTP
-router.post('/resend-signup-otp', async (req, res) => {
-    try {
-        const { email } = req.body;
+// router.post('/resend-signup-otp', async (req, res) => {
+//     try {
+//         const { email } = req.body;
 
-        const existingOTP = await OTP.findOne({ email: email, purpose: 'signup' });
-        if (!existingOTP) {
-            return res.status(400).json({
-                success: false,
-                errors: "No pending signup request. Please start over."
-            });
-        }
+//         const existingOTP = await OTP.findOne({ email: email, purpose: 'signup' });
+//         if (!existingOTP) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "No pending signup request. Please start over."
+//             });
+//         }
 
-        const otp = generateOTP();
+//         const otp = generateOTP();
 
-        await OTP.deleteMany({ email: email, purpose: 'signup' });
+//         await OTP.deleteMany({ email: email, purpose: 'signup' });
 
-        const otpRecord = new OTP({
-            email: email,
-            otp: otp,
-            purpose: 'signup',
-            userData: existingOTP.userData
-        });
-        await otpRecord.save();
+//         const otpRecord = new OTP({
+//             email: email,
+//             otp: otp,
+//             purpose: 'signup',
+//             userData: existingOTP.userData
+//         });
+//         await otpRecord.save();
 
-        await sendSignupOTP(email, otp, existingOTP.userData.username);
+//         try {
+//             await sendSignupOTP(email, otp, existingOTP.userData.username);
+//         } catch (emailError) {
+//             console.error("Email sending failed:", emailError.message);
+//             return res.status(500).json({
+//                 success: false,
+//                 errors: `Failed to send OTP: ${emailError.message}`
+//             });
+//         }
 
-        res.json({
-            success: true,
-            message: "New OTP sent to your email."
-        });
+//         res.json({
+//             success: true,
+//             message: "New OTP sent to your email."
+//         });
 
-    } catch (error) {
-        console.error("Resend OTP Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Failed to resend OTP. Please try again."
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("Resend OTP Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: `Failed to resend OTP: ${error.message}`
+//         });
+//     }
+// });
 
 // Step 3: Verify OTP and complete signup
-router.post('/signup', verifyOTP, async (req, res) => {
-    try {
-        const { email } = req.body;
+// router.post('/signup', verifyOTP, async (req, res) => {
+//     try {
+//         const { email } = req.body;
 
-        const otpRecord = await OTP.findOne({ email: email, purpose: 'signup' });
-        if (!otpRecord || !otpRecord.userData) {
-            return res.status(400).json({
-                success: false,
-                errors: "Invalid request. Please request OTP again."
-            });
-        }
+//         const otpRecord = await OTP.findOne({ email: email, purpose: 'signup' });
+//         if (!otpRecord || !otpRecord.userData) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Invalid request. Please request OTP again."
+//             });
+//         }
 
-        const { username, password } = otpRecord.userData;
+//         const { username, password } = otpRecord.userData;
 
-        let check = await Users.findOne({ email: email });
-        if (check) {
-            return res.status(400).json({
-                success: false,
-                errors: "Email already registered"
-            });
-        }
+//         let check = await Users.findOne({ email: email });
+//         if (check) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Email already registered"
+//             });
+//         }
 
-        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+//         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-        let cart = {};
-        for (let i = 0; i < 300; i++) {
-            cart[i] = 0;
-        }
+//         let cart = {};
+//         for (let i = 0; i < 300; i++) {
+//             cart[i] = 0;
+//         }
 
-        const user = new Users({
-    username: username,
-    email: email,
-    password: hashedPassword,
-    cartData: cart
-});
-        await user.save();
+//         const user = new Users({
+//     username: username,
+//     email: email,
+//     password: hashedPassword,
+//     cartData: cart
+// });
+//         await user.save();
 
-        // const activityLog = new ActivityLog({
-        //     action: 'New user registered',
-        //     type: 'user',
-        //     userId: user._id,
-        //     userName: user.name,
-        //     details: { email: user.email, role: user.role }
-        // });
-        // await activityLog.save();
+//         // const activityLog = new ActivityLog({
+//         //     action: 'New user registered',
+//         //     type: 'user',
+//         //     userId: user._id,
+//         //     userName: user.name,
+//         //     details: { email: user.email, role: user.role }
+//         // });
+//         // await activityLog.save();
 
-        await OTP.deleteMany({ email: email, purpose: 'signup' });
+//         await OTP.deleteMany({ email: email, purpose: 'signup' });
 
-        res.json({
-            success: true,
-            message: "Account created successfully! Please login."
-        });
+//         res.json({
+//             success: true,
+//             message: "Account created successfully! Please login."
+//         });
 
-    } catch (error) {
-        console.error("Signup Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Failed to create account. Please try again."
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("Signup Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: "Failed to create account. Please try again."
+//         });
+//     }
+// });
 
 /* ========== LOGIN FLOW ========== */
 
 // Login - Admin bypasses OTP, regular users need OTP
-router.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
+// Login - Admin bypasses OTP, regular users need OTP
+// router.post('/login', async (req, res) => {
+//     try {
+//         const { email, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({
-                success: false,
-                errors: "Email and password are required"
-            });
-        }
+//         if (!email || !password) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Email and password are required"
+//             });
+//         }
 
-        // Check for admin login - DIRECT LOGIN (NO OTP)
-        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-            const token = jwt.sign({
-    user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
-    }
-}, process.env.JWT_SECRET);
+//         // Check for admin login - DIRECT LOGIN (NO OTP)
+//         if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+//             const token = jwt.sign({
+//                 user: {
+//                     id: 'admin',
+//                     username: 'admin',
+//                     email: ADMIN_EMAIL,
+//                     isAdmin: true
+//                 }
+//             }, process.env.JWT_SECRET);
 
-            return res.json({
-                success: true,
-                token,
-                role: 'admin',
-                message: "Admin login successful"
-            });
-        }
+//             return res.json({
+//                 success: true,
+//                 token,
+//                 role: 'admin',
+//                 message: "Admin login successful"
+//             });
+//         }
 
-        // For regular users, find the user first
-        const user = await Users.findOne({ email: email });
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                errors: "Invalid email or password"
-            });
-        }
+//         // For regular users, find the user first
+//         const user = await Users.findOne({ email: email });
+//         if (!user) {
+//             return res.status(401).json({
+//                 success: false,
+//                 errors: "Invalid email or password"
+//             });
+//         }
 
-        // Verify password
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({
-                success: false,
-                errors: "Invalid email or password"
-            });
-        }
+//         // Verify password
+//         const isPasswordValid = await bcrypt.compare(password, user.password);
+//         if (!isPasswordValid) {
+//             return res.status(401).json({
+//                 success: false,
+//                 errors: "Invalid email or password"
+//             });
+//         }
 
-        // For regular users - generate and send OTP
-        const otp = generateOTP();
+//         // For regular users - generate and send OTP
+//         const otp = generateOTP();
 
-        // Delete old OTPs
-        await OTP.deleteMany({ email: email, purpose: 'login' });
+//         // Delete old OTPs
+//         await OTP.deleteMany({ email: email, purpose: 'login' });
 
-        // Save OTP with user info
-        const otpRecord = new OTP({
-            email: email,
-            otp: otp,
-            purpose: 'login',
-            userData: {
-                userId: user._id,
-                role: user.role
-            }
-        });
-        await otpRecord.save();
+//         // Save OTP with user info - FIXED: Added userData and proper closing
+//         const otpRecord = new OTP({
+//             email: email,
+//             otp: otp,
+//             purpose: 'login',
+//             userData: {
+//                 userId: user._id,
+//                 role: user.role
+//             }
+//         });
+//         await otpRecord.save();
 
-        // Send OTP via email
-        await sendLoginOTP(email, otp, user.name);
+//         try {
+//             await sendLoginOTP(email, otp, user.username || user.name || 'User');
+//         } catch (emailError) {
+//             console.error("Email sending failed:", emailError.message);
+//             return res.status(500).json({
+//                 success: false,
+//                 errors: `Failed to send OTP: ${emailError.message}`
+//             });
+//         }
 
-        res.json({
-            success: true,
-            requiresOTP: true,
-            message: "OTP sent to your email. Please verify to complete login.",
-            email: email
-        });
+//         res.json({
+//             success: true,
+//             requiresOTP: true,
+//             message: "OTP sent to your email. Please verify to complete login.",
+//             email: email
+//         });
 
-    } catch (error) {
-        console.error("Login Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Login failed. Please try again."
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("Login Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: `Login failed: ${error.message}`
+//         });
+//     }
+// });
 
 // Verify OTP and complete login (for regular users only)
-router.post('/verify-login-otp', verifyOTP, async (req, res) => {
-    try {
-        const { email } = req.body;
+// router.post('/verify-login-otp', verifyOTP, async (req, res) => {
+//     try {
+//         const { email } = req.body;
 
-        const otpRecord = await OTP.findOne({ email: email, purpose: 'login' });
-        if (!otpRecord || !otpRecord.userData) {
-            return res.status(400).json({
-                success: false,
-                errors: "Invalid request. Please login again."
-            });
-        }
+//         const otpRecord = await OTP.findOne({ email: email, purpose: 'login' });
+//         if (!otpRecord || !otpRecord.userData) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Invalid request. Please login again."
+//             });
+//         }
 
-        const { userId, role } = otpRecord.userData;
+//         const { userId, role } = otpRecord.userData;
 
-        const user = await Users.findById(userId);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                errors: "User not found"
-            });
-        }
+//         const user = await Users.findById(userId);
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 errors: "User not found"
+//             });
+//         }
 
-        const token = jwt.sign({
-    user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
-    }
-}, process.env.JWT_SECRET);
+//         const token = jwt.sign({
+//     user: {
+//         id: user._id,
+//         username: user.username,
+//         email: user.email
+//     }
+// }, process.env.JWT_SECRET);
 
-        await OTP.deleteMany({ email: email, purpose: 'login' });
+//         await OTP.deleteMany({ email: email, purpose: 'login' });
 
-        res.json({
-            success: true,
-            token,
-            role: user.role,
-            message: "Login successful!"
-        });
+//         res.json({
+//             success: true,
+//             token,
+//             role: user.role,
+//             message: "Login successful!"
+//         });
 
-    } catch (error) {
-        console.error("OTP Verification Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Verification failed. Please try again."
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("OTP Verification Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: "Verification failed. Please try again."
+//         });
+//     }
+// });
 
 // Resend login OTP (for regular users)
-router.post('/resend-login-otp', async (req, res) => {
-    try {
-        const { email } = req.body;
+// router.post('/resend-login-otp', async (req, res) => {
+//     try {
+//         const { email } = req.body;
 
-        const user = await Users.findOne({ email: email });
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                errors: "User not found"
-            });
-        }
+//         const user = await Users.findOne({ email: email });
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 errors: "User not found"
+//             });
+//         }
 
-        await OTP.deleteMany({ email: email, purpose: 'login' });
+//         await OTP.deleteMany({ email: email, purpose: 'login' });
 
-        const otp = generateOTP();
+//         const otp = generateOTP();
 
-        const otpRecord = new OTP({
-            email: email,
-            otp: otp,
-            purpose: 'login',
-            userData: {
-                userId: user._id,
-                role: user.role
-            }
-        });
-        await otpRecord.save();
+//         const otpRecord = new OTP({
+//             email: email,
+//             otp: otp,
+//             purpose: 'login',
+//             userData: {
+//                 userId: user._id,
+//                 role: user.role
+//             }
+//         });
+//         await otpRecord.save();
 
-        await sendLoginOTP(email, otp, user.name);
+//         try {
+//             await sendLoginOTP(email, otp, user.username || user.name || 'User');
+//         } catch (emailError) {
+//             console.error("Email sending failed:", emailError.message);
+//             return res.status(500).json({
+//                 success: false,
+//                 errors: `Failed to send OTP: ${emailError.message}`
+//             });
+//         }
 
-        res.json({
-            success: true,
-            message: "New OTP sent to your email"
-        });
+//         res.json({
+//             success: true,
+//             message: "New OTP sent to your email"
+//         });
 
-    } catch (error) {
-        console.error("Resend Login OTP Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Failed to resend OTP"
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("Resend Login OTP Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: `Failed to resend OTP: ${error.message}`
+//         });
+//     }
+// });
 
 /* ========== FORGET PASSWORD FLOW ========== */
 
 // Request password reset OTP
-router.post('/forgot-password', async (req, res) => {
-    try {
-        const { email } = req.body;
+// router.post('/forgot-password', async (req, res) => {
+//     try {
+//         const { email } = req.body;
 
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                errors: "Email is required"
-            });
-        }
+//         if (!email) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Email is required"
+//             });
+//         }
 
-        const user = await Users.findOne({ email: email });
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                errors: "No account found with this email address"
-            });
-        }
+//         const user = await Users.findOne({ email: email });
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 errors: "No account found with this email address"
+//             });
+//         }
 
-        const otp = generateOTP();
+//         const otp = generateOTP();
 
-        await OTP.deleteMany({ email: email, purpose: 'password_reset' });
+//         await OTP.deleteMany({ email: email, purpose: 'password_reset' });
 
-        const otpRecord = new OTP({
-            email: email,
-            otp: otp,
-            purpose: 'password_reset',
-            userData: {
-                userId: user._id
-            }
-        });
-        await otpRecord.save();
+//         const otpRecord = new OTP({
+//             email: email,
+//             otp: otp,
+//             purpose: 'password_reset',
+//             userData: {
+//                 userId: user._id
+//             }
+//         });
+//         await otpRecord.save();
 
-        await sendPasswordResetOTP(email, otp, user.name);
+//         try {
+//             await sendPasswordResetOTP(email, otp, user.username || user.name || 'User');
+//         } catch (emailError) {
+//             console.error("Email sending failed:", emailError.message);
+//             return res.status(500).json({
+//                 success: false,
+//                 errors: `Failed to send OTP: ${emailError.message}`
+//             });
+//         }
 
-        res.json({
-            success: true,
-            message: "Password reset OTP sent to your email",
-            email: email
-        });
+//         res.json({
+//             success: true,
+//             message: "Password reset OTP sent to your email",
+//             email: email
+//         });
 
-    } catch (error) {
-        console.error("Forgot Password Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Failed to send password reset OTP. Please try again."
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("Forgot Password Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: `Failed to send password reset OTP: ${error.message}`
+//         });
+//     }
+// });
 
 // Resend password reset OTP
-router.post('/resend-password-otp', async (req, res) => {
-    try {
-        const { email } = req.body;
+// router.post('/resend-password-otp', async (req, res) => {
+//     try {
+//         const { email } = req.body;
 
-        const user = await Users.findOne({ email: email });
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                errors: "User not found"
-            });
-        }
+//         const user = await Users.findOne({ email: email });
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 errors: "User not found"
+//             });
+//         }
 
-        await OTP.deleteMany({ email: email, purpose: 'password_reset' });
+//         await OTP.deleteMany({ email: email, purpose: 'password_reset' });
 
-        const otp = generateOTP();
+//         const otp = generateOTP();
 
-        const otpRecord = new OTP({
-            email: email,
-            otp: otp,
-            purpose: 'password_reset',
-            userData: {
-                userId: user._id
-            }
-        });
-        await otpRecord.save();
+//         const otpRecord = new OTP({
+//             email: email,
+//             otp: otp,
+//             purpose: 'password_reset',
+//             userData: {
+//                 userId: user._id
+//             }
+//         });
+//         await otpRecord.save();
 
-        await sendPasswordResetOTP(email, otp, user.name);
+//         try {
+//             await sendPasswordResetOTP(email, otp, user.username || user.name || 'User');
+//         } catch (emailError) {
+//             console.error("Email sending failed:", emailError.message);
+//             return res.status(500).json({
+//                 success: false,
+//                 errors: `Failed to send OTP: ${emailError.message}`
+//             });
+//         }
 
-        res.json({
-            success: true,
-            message: "New OTP sent to your email"
-        });
+//         res.json({
+//             success: true,
+//             message: "New OTP sent to your email"
+//         });
 
-    } catch (error) {
-        console.error("Resend Password OTP Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Failed to resend OTP"
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("Resend Password OTP Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: `Failed to resend OTP: ${error.message}`
+//         });
+//     }
+// });
 
 // Verify OTP and reset password
-router.post('/reset-password', verifyOTP, async (req, res) => {
-    try {
-        const { email, newPassword } = req.body;
+// router.post('/reset-password', verifyOTP, async (req, res) => {
+//     try {
+//         const { email, newPassword } = req.body;
 
-        if (!newPassword || newPassword.length < 6) {
-            return res.status(400).json({
-                success: false,
-                errors: "Password must be at least 6 characters long"
-            });
-        }
+//         if (!newPassword || newPassword.length < 6) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Password must be at least 6 characters long"
+//             });
+//         }
 
-        const otpRecord = await OTP.findOne({ email: email, purpose: 'password_reset' });
-        if (!otpRecord || !otpRecord.userData) {
-            return res.status(400).json({
-                success: false,
-                errors: "Invalid request. Please request OTP again."
-            });
-        }
+//         const otpRecord = await OTP.findOne({ email: email, purpose: 'password_reset' });
+//         if (!otpRecord || !otpRecord.userData) {
+//             return res.status(400).json({
+//                 success: false,
+//                 errors: "Invalid request. Please request OTP again."
+//             });
+//         }
 
-        const { userId } = otpRecord.userData;
+//         const { userId } = otpRecord.userData;
 
-        const user = await Users.findById(userId);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                errors: "User not found"
-            });
-        }
+//         const user = await Users.findById(userId);
+//         if (!user) {
+//             return res.status(404).json({
+//                 success: false,
+//                 errors: "User not found"
+//             });
+//         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
-        await Users.findByIdAndUpdate(user._id, { password: hashedPassword });
+//         const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+//         await Users.findByIdAndUpdate(user._id, { password: hashedPassword });
 
-        // const activityLog = new ActivityLog({
-        //     action: 'Password reset',
-        //     type: 'user',
-        //     userId: user._id,
-        //     userName: user.name,
-        //     details: { email: email }
-        // });
-        // await activityLog.save();
+//         // const activityLog = new ActivityLog({
+//         //     action: 'Password reset',
+//         //     type: 'user',
+//         //     userId: user._id,
+//         //     userName: user.name,
+//         //     details: { email: email }
+//         // });
+//         // await activityLog.save();
 
-        await sendPasswordResetSuccess(email, user.name);
-        await OTP.deleteMany({ email: email, purpose: 'password_reset' });
+//         await sendPasswordResetSuccess(email, user.name);
+//         await OTP.deleteMany({ email: email, purpose: 'password_reset' });
 
-        res.json({
-            success: true,
-            message: "Password reset successful! Please login with your new password."
-        });
+//         res.json({
+//             success: true,
+//             message: "Password reset successful! Please login with your new password."
+//         });
 
-    } catch (error) {
-        console.error("Reset Password Error:", error);
-        res.status(500).json({
-            success: false,
-            errors: "Failed to reset password. Please try again."
-        });
-    }
-});
+//     } catch (error) {
+//         console.error("Reset Password Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             errors: "Failed to reset password. Please try again."
+//         });
+//     }
+// });
 
 /* GET USER */
 
