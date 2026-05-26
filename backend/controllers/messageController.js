@@ -5,21 +5,35 @@ const fs = require('fs');
 
 // Get messages between two users
 exports.getPrivateMessages = async (req, res) => {
+
   try {
-    const { userId } = req.params;
+
+    const { userId, currentUserId } = req.params;
+
     const messages = await Message.find({
       $or: [
-        { senderId: req.user.id, receiverId: userId },
-        { senderId: userId, receiverId: req.user.id }
+        {
+          senderId: currentUserId,
+          receiverId: userId
+        },
+        {
+          senderId: userId,
+          receiverId: currentUserId
+        }
       ]
     })
-      .populate('senderId', 'username avatar')
-      .populate('receiverId', 'username avatar')
-      .sort({ createdAt: 1 });
+    .populate('senderId', 'username avatar')
+    .populate('receiverId', 'username avatar')
+    .sort({ createdAt: 1 });
 
     res.json(messages);
+
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch messages', error: error.message });
+
+    res.status(500).json({
+      message: 'Failed to fetch messages',
+      error: error.message
+    });
   }
 };
 
@@ -39,18 +53,36 @@ exports.getRoomMessages = async (req, res) => {
 
 // Get chat history with pagination
 exports.getChatHistory = async (req, res) => {
+
   try {
-    const { userId, roomId, limit = 50, skip = 0 } = req.query;
+
+    const {
+      userId,
+      currentUserId,
+      roomId,
+      limit = 50,
+      skip = 0
+    } = req.query;
 
     let query = {};
-    if (userId) {
+
+    if (userId && currentUserId) {
+
       query = {
         $or: [
-          { senderId: req.user.id, receiverId: userId },
-          { senderId: userId, receiverId: req.user.id }
+          {
+            senderId: currentUserId,
+            receiverId: userId
+          },
+          {
+            senderId: userId,
+            receiverId: currentUserId
+          }
         ]
       };
+
     } else if (roomId) {
+
       query = { roomId };
     }
 
@@ -62,8 +94,13 @@ exports.getChatHistory = async (req, res) => {
       .limit(parseInt(limit));
 
     res.json(messages.reverse());
+
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch chat history', error: error.message });
+
+    res.status(500).json({
+      message: 'Failed to fetch chat history',
+      error: error.message
+    });
   }
 };
 

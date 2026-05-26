@@ -132,9 +132,19 @@ exports.searchUsers = async (req, res) => {
 
 // Get recent chats
 exports.getRecentChats = async (req, res) => {
+
   try {
-    res.json([]);
+
+    const recentMessages = await Message.find()
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .populate('senderId', 'username avatar')
+      .populate('receiverId', 'username avatar');
+
+    res.json(recentMessages);
+
   } catch (error) {
+
     res.status(500).json({
       message: 'Failed to fetch recent chats'
     });

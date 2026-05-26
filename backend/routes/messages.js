@@ -4,7 +4,7 @@ const messageController = require('../controllers/messageController');
 // const authenticateToken = require('../middleware/auth');
 
 // Get private messages with a user
-router.get('/private/:userId', messageController.getPrivateMessages);
+router.get('/private/:currentUserId/:userId', messageController.getPrivateMessages);
 
 // Get room messages
 router.get('/room/:roomId', messageController.getRoomMessages);
