@@ -15,7 +15,10 @@ export const userService = {
 };
 
 export const messageService = {
-  getPrivateMessages: (userId) => axios.get(`${API_URL}/messages/private/${userId}`),
+  getPrivateMessages: (currentUserId, userId) =>
+  axios.get(
+    `${API_URL}/messages/private/${currentUserId}/${userId}`
+  ),
   getRoomMessages: (roomId) => axios.get(`${API_URL}/messages/room/${roomId}`),
   getChatHistory: (params) => axios.get(`${API_URL}/messages/history`, { params }),
   markAsRead: (messageId) => axios.put(`${API_URL}/messages/read/${messageId}`),

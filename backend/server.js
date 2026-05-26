@@ -11,10 +11,17 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = [
+    'https://chat-gules-phi.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173', // If using Vite
+    'http://localhost:8080'  // Common React port
+];
 const io = socketIo(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
   }
 });
 
@@ -22,12 +29,6 @@ const path = require('path');
 const fs = require('fs');
 
 // Middleware
-const allowedOrigins = [
-    'https://chat-gules-phi.vercel.app',
-    'http://localhost:3000',
-    'http://localhost:5173', // If using Vite
-    'http://localhost:8080'  // Common React port
-];
 
 app.use(cors({
     origin: function (origin, callback) {

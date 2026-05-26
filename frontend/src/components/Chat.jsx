@@ -127,7 +127,10 @@ export const ChatApp = () => {
   const fetchChatHistory = async (chatType, chatId) => {
     try {
       if (chatType === 'private') {
-        const response = await messageService.getPrivateMessages(chatId);
+        const response = await messageService.getPrivateMessages(
+  mongoUser._id,
+  chatId
+);
         setMessages(response.data);
       } else if (chatType === 'room') {
         const response = await messageService.getRoomMessages(chatId);
@@ -175,10 +178,13 @@ socket.on('newPrivateMessage', (msg) => {
   const receiverId = msg.receiverId?._id || msg.receiverId;
 
   // If current chat is open
-  if (
-    activeChat?.type === 'private' &&
-    (activeChat.userId === senderId || activeChat.userId === receiverId)
-  ) {
+if (
+  activeChat?.type === 'private' &&
+  (
+    activeChat.userId?.toString() === senderId?.toString() ||
+    activeChat.userId?.toString() === receiverId?.toString()
+  )
+){
     setMessages((prev) => [...prev, msg]);
   }
   else {
@@ -612,7 +618,11 @@ const prevSenderId =
 
 const showSenderInfo =
   idx === 0 || currentSenderId !== prevSenderId;
-                const isSent = msg.senderId === mongoUser?._id || msg.senderId?._id === mongoUser?._id || (typeof msg.senderId === 'string' && msg.senderId === mongoUser?._id);
+                const senderId =
+  msg.senderId?._id || msg.senderId;
+
+const isSent =
+  senderId?.toString() === mongoUser?._id?.toString();
                 const senderUser = users.find(u => u._id === (msg.senderId?._id || msg.senderId));
                 
                 return (
