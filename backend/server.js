@@ -49,11 +49,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Ensure uploads directory exists and serve it statically
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
-}
-app.use('/uploads', express.static(uploadsDir));
+// const uploadsDir = path.join(__dirname, 'uploads');
+// if (!fs.existsSync(uploadsDir)) {
+//   fs.mkdirSync(uploadsDir);
+// }
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)

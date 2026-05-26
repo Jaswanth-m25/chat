@@ -1,7 +1,7 @@
 const Message = require('../models/Message');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const cloudinary = require('../config/cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 // Get messages between two users
 exports.getPrivateMessages = async (req, res) => {
@@ -119,18 +119,16 @@ exports.markAsRead = async (req, res) => {
     res.status(500).json({ message: 'Failed to mark message as read', error: error.message });
   }
 };
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadsDir = path.join(__dirname, '..', 'uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir);
-    }
-    cb(null, uploadsDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    const isImage = file.mimetype.startsWith('image/');
+
+    return {
+      folder: isImage ? 'chat-images' : 'chat-files',
+      resource_type: 'auto'
+    };
   }
 });
 
@@ -142,7 +140,7 @@ exports.uploadFile = (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const fileUrl = '/uploads/' + req.file.filename;
+    const fileUrl = req.file.path;
     const mimetype = req.file.mimetype;
     const isImage = mimetype.startsWith('image/');
     

@@ -663,14 +663,14 @@ const isSent =
                         
                       {msg.messageType === 'image' ? (
                         <img 
-                          src={`https://chat-backend-da9m.onrender.com/${msg.content}`} 
+                          src={msg.content}
                           alt="uploaded" 
                           className="message-image"
-                          onClick={() => handleImageClick(`https://chat-backend-da9m.onrender.com/${msg.content}`)}
+                          onClick={() => handleImageClick(msg.content)}
                         />
                       ) : msg.messageType === 'file' ? (
                         <a 
-                          href={`https://chat-backend-da9m.onrender.com/${msg.content}`} 
+                          href={msg.content}
                           target="_blank" 
                           rel="noreferrer"
                           className="message-file-link"

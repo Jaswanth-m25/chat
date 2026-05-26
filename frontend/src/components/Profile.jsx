@@ -6,6 +6,7 @@ import './Profile.css';
 
 export const Profile = ({ userId = null, isModal = false, onClose = null }) => {
   const { user: currentUser } = useUser();
+  const mongoUser = JSON.parse(localStorage.getItem("mongoUser"));
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -13,8 +14,9 @@ export const Profile = ({ userId = null, isModal = false, onClose = null }) => {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
-  const profileUserId = userId || currentUser?.id;
-  const isOwnProfile = !userId || userId === currentUser?.id;
+const profileUserId = userId || mongoUser?._id;
+const isOwnProfile =
+  !userId || userId === mongoUser?._id;
 
 useEffect(() => {
   fetchProfile();
