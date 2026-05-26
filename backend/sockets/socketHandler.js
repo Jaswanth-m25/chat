@@ -104,6 +104,9 @@ io.use(async (socket, next) => {
     socket.on('privateMessage', async (data) => {
       try {
         const { receiverId, content } = data;
+        console.log("SENDER:", socket.userId);
+console.log("RECEIVER:", receiverId);
+console.log("CONTENT:", content);
 
         const message = new Message({
           senderId: socket.userId,
@@ -139,7 +142,12 @@ io.use(async (socket, next) => {
           });
         }
       } catch (error) {
-        socket.emit('error', { message: 'Failed to send message' });
+        console.error(error);
+
+socket.emit('error', {
+  message: 'Failed to send message',
+  error
+});
       }
     });
 
