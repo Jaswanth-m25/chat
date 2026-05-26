@@ -137,13 +137,39 @@ exports.getRecentChats = async (req, res) => {
 
     const recentMessages = await Message.find()
       .sort({ createdAt: -1 })
-      .limit(20)
       .populate('senderId', 'username avatar')
       .populate('receiverId', 'username avatar');
 
-    res.json(recentMessages);
+    const uniqueUsers = new Map();
+
+    recentMessages.forEach((msg) => {
+
+      const sender = msg.senderId;
+      const receiver = msg.receiverId;
+
+      if (sender?._id) {
+        uniqueUsers.set(sender._id.toString(), {
+          _id: sender._id,
+          userDetails: [sender],
+          lastMessage: msg.content
+        });
+      }
+
+      if (receiver?._id) {
+        uniqueUsers.set(receiver._id.toString(), {
+          _id: receiver._id,
+          userDetails: [receiver],
+          lastMessage: msg.content
+        });
+      }
+
+    });
+
+    res.json(Array.from(uniqueUsers.values()));
 
   } catch (error) {
+
+    console.error(error);
 
     res.status(500).json({
       message: 'Failed to fetch recent chats'
