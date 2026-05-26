@@ -46,7 +46,12 @@ function App() {
             email: user.primaryEmailAddress?.emailAddress,
             avatar: user.imageUrl
           }
+          
         );
+        localStorage.setItem(
+  "mongoUser",
+  JSON.stringify(response.data.user)
+);
 
         console.log(response.data);
 

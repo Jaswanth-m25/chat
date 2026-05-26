@@ -8,6 +8,7 @@ import './Chat.css';
 
 export const ChatApp = () => {
   const { user } = useUser();
+  const mongoUser = JSON.parse(localStorage.getItem("mongoUser"));
   const { signOut } = useClerk();
   const { socket, onlineUsers } = useSocket();
   const [activeChat, setActiveChat] = useState(null);
@@ -346,7 +347,7 @@ const handleUserClick = async (userId, username) => {
   };
 
   const handleViewProfile = () => {
-    setSelectedProfileUserId(user?.id);
+    setSelectedProfileUserId(mongoUser?._id);
     setShowProfileModal(true);
     setShowDropdown(false);
   };
@@ -399,9 +400,9 @@ const handleUserClick = async (userId, username) => {
           title="Click to view your profile"
         >
           <div className="user-avatar">
-            {getUserAvatar(user?.id, user?.username) ? (
+            {getUserAvatar(mongoUser?._id, user?.username) ? (
               <img 
-                src={getUserAvatar(user?.id, user?.username)} 
+                src={getUserAvatar(mongoUser?._id, user?.username)} 
                 alt={user?.username}
                 className="avatar-img"
               />
@@ -611,7 +612,7 @@ const prevSenderId =
 
 const showSenderInfo =
   idx === 0 || currentSenderId !== prevSenderId;
-                const isSent = msg.senderId === user?.id || msg.senderId?._id === user?.id || (typeof msg.senderId === 'string' && msg.senderId === user?.id);
+                const isSent = msg.senderId === mongoUser?._id || msg.senderId?._id === mongoUser?._id || (typeof msg.senderId === 'string' && msg.senderId === mongoUser?._id);
                 const senderUser = users.find(u => u._id === (msg.senderId?._id || msg.senderId));
                 
                 return (
