@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const Message = require('../models/Message');
 const User = require('../models/User');
 const Room = require('../models/Room');
@@ -10,23 +9,13 @@ const activeUsers = {};
 const typingUsers = {};
 
 const socketHandler = (io) => {
-  io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
-    if (!token) {
-      return next(new Error('Authentication error'));
-    }
+io.use((socket, next) => {
 
-    try {
-const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  socket.userId = socket.handshake.auth.userId;
+  socket.username = socket.handshake.auth.username;
 
-socket.userId = decoded.user.id;
-socket.username = decoded.user.username || 'User';
-socket.email = decoded.user.email || '';
-      next();
-    } catch (error) {
-      next(new Error('Authentication error'));
-    }
-  });
+  next();
+});
 
   io.on('connection', async (socket) => {
     console.log(`User connected: ${socket.username} (${socket.userId})`);

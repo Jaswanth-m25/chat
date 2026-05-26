@@ -15,8 +15,14 @@ export const SocketProvider = ({ children }) => {
     if (user) {
 
       const socketInstance = io(
-        process.env.REACT_APP_SOCKET_URL || 'https://chat-backend-da9m.onrender.com'
-      );
+  process.env.REACT_APP_SOCKET_URL || 'https://chat-backend-da9m.onrender.com',
+  {
+    auth: {
+      userId: user.publicMetadata?.mongoUserId || user.id,
+      username: user.fullName
+    }
+  }
+);
 
       socketInstance.on('connect', () => {
         console.log('Socket connected');
