@@ -5,7 +5,6 @@ const cloudinary = require('../config/cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 // const authenticateToken = require('../middleware/auth');
 const multer = require('multer');
-const path = require('path');
 // Configure multer for profile picture uploads
 // const storage = multer.diskStorage({
 //   destination: (req, file, cb) => {
@@ -19,15 +18,9 @@ const path = require('path');
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
-    // Generate unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const originalName = path.parse(file.originalname).name;
-    
     return {
       folder: 'chat-app-profiles',
-      resource_type: 'image',
-      public_id: `${originalName}-${uniqueSuffix}`,
-      allowed_formats: ['jpg', 'png', 'gif', 'webp', 'jpeg']
+      resource_type: 'image'
     };
   }
 });
