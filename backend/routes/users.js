@@ -5,6 +5,7 @@ const cloudinary = require('../config/cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 // const authenticateToken = require('../middleware/auth');
 const multer = require('multer');
+const path = require('path');
 // Configure multer for profile picture uploads
 // const storage = multer.diskStorage({
 //   destination: (req, file, cb) => {
