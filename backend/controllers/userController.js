@@ -63,13 +63,7 @@ if (!allowedTypes.includes(req.file.mimetype)) {
     message: 'Invalid file type. Only images are allowed.'
   });
 }
-
-    // Validate file size (max 5MB)
-if (req.file.size > 5 * 1024 * 1024) {
-  return res.status(400).json({
-    message: 'File size too large. Maximum 5MB allowed.'
-  });
-}
+   console.log(req.file);
    const fileUrl = req.file.path;
 
     // Update user with new avatar
@@ -85,7 +79,12 @@ const user = await User.findByIdAndUpdate(
     });
   } catch (error) {
 
-    res.status(500).json({ message: 'Failed to upload profile picture', error: error.message });
+  console.error("UPLOAD ERROR:", error);
+
+  res.status(500).json({
+    message: 'Failed to upload profile picture',
+    error: error.message
+  });
   }
 };
 
