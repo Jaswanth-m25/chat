@@ -18,9 +18,15 @@ const multer = require('multer');
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
+    // Generate unique filename
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const originalName = path.parse(file.originalname).name;
+    
     return {
       folder: 'chat-app-profiles',
-      resource_type: 'image'
+      resource_type: 'image',
+      public_id: `${originalName}-${uniqueSuffix}`,
+      allowed_formats: ['jpg', 'png', 'gif', 'webp', 'jpeg']
     };
   }
 });
