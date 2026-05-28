@@ -187,4 +187,3 @@ exports.clearChat = async (req, res) => {
   }
 
 };
-module.exports = {clearChat};
