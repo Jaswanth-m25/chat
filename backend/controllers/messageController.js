@@ -153,3 +153,38 @@ exports.uploadFile = (req, res) => {
     res.status(500).json({ message: 'Failed to upload file', error: error.message });
   }
 };
+exports.clearChat = async (req, res) => {
+
+  try {
+
+    const currentUserId = req.user.id;
+    const otherUserId = req.params.userId;
+
+    await Message.deleteMany({
+      $or: [
+        {
+          senderId: currentUserId,
+          receiverId: otherUserId
+        },
+        {
+          senderId: otherUserId,
+          receiverId: currentUserId
+        }
+      ]
+    });
+
+    res.json({
+      message: 'Chat cleared successfully'
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: 'Failed to clear chat',
+      error: error.message
+    });
+
+  }
+
+};
+module.exports = {clearChat};

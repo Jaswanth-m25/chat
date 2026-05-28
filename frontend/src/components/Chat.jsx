@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useUser, useClerk } from "@clerk/clerk-react";
 import { useSocket } from '../context/SocketContext';
 import { userService, messageService, roomService } from '../services/api';
-import {FiSend, FiUsers, FiLogOut, FiPaperclip, FiFile, FiUser, FiSearch, FiX, FiMoreVertical } from 'react-icons/fi';
+import {FiSend, FiUsers, FiLogOut, FiPaperclip, FiFile, FiUser, FiSearch, FiX } from 'react-icons/fi';
+import { FiMoreVertical, FiTrash2, FiSlash, FiXCircle } from 'react-icons/fi';
 import { Profile } from './Profile';
 import './Chat.css';
 
@@ -14,9 +15,12 @@ export const ChatApp = () => {
   const [activeChat, setActiveChat] = useState(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [showMessageSearch, setShowMessageSearch] = useState(false);
+  const [messageSearch, setMessageSearch] = useState('');
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [recentChats, setRecentChats] = useState([]);
+  const [showChatMenu, setShowChatMenu] = useState(false);
   const [filteredRecentChats, setFilteredRecentChats] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -79,7 +83,23 @@ export const ChatApp = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+const handleClearChat = async () => {
 
+  try {
+
+    await messageService.clearChat(activeChat.userId);
+
+    setMessages([]);
+
+    setShowChatMenu(false);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
   const fetchUsers = async () => {
     try {
       const response = await userService.getAllUsers();
@@ -593,22 +613,87 @@ const handleUserClick = async (userId, username) => {
                       : 'Group Chat'}
                 </h2>
               </div>
-              {activeChat?.type === 'private' && (
-                <button 
-                  className="view-profile-btn"
-                  onClick={() => {
-                    setSelectedProfileUserId(activeChat.userId);
-                    setShowProfileModal(true);
-                  }}
-                  title="View user profile"
-                >
-                  <FiUser size={20} /> View Profile
-                </button>
-              )}
-            </div>
+              <div className="chat-header-actions">
 
+  <button
+    onClick={() => setShowMessageSearch(prev => !prev)}
+    className="header-icon-btn"
+    title="Search messages"
+  >
+    <FiSearch className="text-lg" />
+  </button>
+
+  {/* View Profile */}
+  {activeChat?.type === 'private' && (
+    <button 
+      className="view-profile-btn"
+      onClick={() => {
+        setSelectedProfileUserId(activeChat.userId);
+        setShowProfileModal(true);
+      }}
+      title="View user profile"
+    >
+      <FiUser size={20} /> View Profile
+    </button>
+  )}
+
+  {/* Three Dots Menu */}
+  <div className="chat-menu-wrapper">
+
+    <button
+      className="header-icon-btn"
+      onClick={() => setShowChatMenu(prev => !prev)}
+    >
+      <FiMoreVertical size={20} />
+    </button>
+
+    {showChatMenu && (
+      <div className="chat-dropdown-menu">
+
+        <button className="chat-dropdown-item">
+          <FiTrash2 />
+          Delete Messages
+        </button>
+
+<button
+  className="chat-dropdown-item"
+  onClick={handleClearChat}
+>
+  <FiXCircle />
+  Clear Chat
+</button>
+
+        <button className="chat-dropdown-item block-item">
+          <FiSlash />
+          Block User
+        </button>
+
+      </div>
+    )}
+
+  </div>
+
+</div>
+            </div>
+{showMessageSearch && (
+  <div className="px-6 py-3 border-b border-zinc-800 bg-zinc-900">
+    
+    <input
+      type="text"
+      placeholder="Search messages..."
+      value={messageSearch}
+      onChange={(e) => setMessageSearch(e.target.value)}
+      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none text-white placeholder:text-zinc-400"
+      autoFocus
+    />
+
+  </div>
+)}
             <div className="messages">
-              {messages.map((msg, idx) => {
+              {messages
+.filter(msg =>
+  msg.content?.toLowerCase().includes(messageSearch.toLowerCase())
+).map((msg, idx) => {
                 const prevMsg = messages[idx - 1];
 
 const currentSenderId = msg.senderId?._id || msg.senderId;

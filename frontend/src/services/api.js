@@ -22,6 +22,8 @@ export const messageService = {
   getRoomMessages: (roomId) => axios.get(`${API_URL}/messages/room/${roomId}`),
   getChatHistory: (params) => axios.get(`${API_URL}/messages/history`, { params }),
   markAsRead: (messageId) => axios.put(`${API_URL}/messages/read/${messageId}`),
+  clearChat: (userId) =>
+  axios.delete(`${API_URL}/messages/clear/${userId}`),
   uploadFile: (formData) => axios.post(`${API_URL}/messages/upload`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
