@@ -154,13 +154,17 @@ exports.uploadFile = (req, res) => {
   }
 };
 exports.clearChat = async (req, res) => {
-
   try {
 
-    const currentUserId = req.user.id;
+    console.log("PARAMS:", req.params);
+
+    const currentUserId = req.params.currentUserId;
     const otherUserId = req.params.userId;
 
-    await Message.deleteMany({
+    console.log("CURRENT:", currentUserId);
+    console.log("OTHER:", otherUserId);
+
+    const result = await Message.deleteMany({
       $or: [
         {
           senderId: currentUserId,
@@ -173,17 +177,20 @@ exports.clearChat = async (req, res) => {
       ]
     });
 
+    console.log("DELETE RESULT:", result);
+
     res.json({
-      message: 'Chat cleared successfully'
+      message: "Chat cleared successfully"
     });
 
   } catch (error) {
 
+    console.error("CLEAR CHAT ERROR:", error);
+
     res.status(500).json({
-      message: 'Failed to clear chat',
+      message: "Failed to clear chat",
       error: error.message
     });
 
   }
-
 };
