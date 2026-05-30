@@ -4,7 +4,7 @@ const Room = require('../models/Room');
 
 // Store active users: { userId: socketId }
 const activeUsers = {};
-
+const activePrivateChats = {};
 // Store typing users: { roomId_or_userId: [{ userId, username, socketId }] }
 const typingUsers = {};
 
@@ -147,6 +147,46 @@ if (
     });
 
     await message.save();
+
+const receiverCurrentChat =
+  activePrivateChats[receiverId];
+
+if (activeUsers[receiverId]) {
+
+  if (
+    receiverCurrentChat &&
+    receiverCurrentChat.toString() ===
+      socket.userId.toString()
+  ) {
+
+    await Message.findByIdAndUpdate(
+      message._id,
+      {
+        isDelivered: true,
+        deliveredAt: new Date(),
+        isRead: true,
+        readAt: new Date()
+      }
+    );
+
+    message.isDelivered = true;
+    message.isRead = true;
+
+  } else {
+
+    await Message.findByIdAndUpdate(
+      message._id,
+      {
+        isDelivered: true,
+        deliveredAt: new Date()
+      }
+    );
+
+    message.isDelivered = true;
+
+  }
+
+}
     if (activeUsers[receiverId]) {
 
   await Message.findByIdAndUpdate(
@@ -196,12 +236,23 @@ socket.emit('error', {
       }
     });
 
-    socket.on('joinPrivateChat', (data) => {
-      const { userId } = data;
-      const roomId = [socket.userId, userId].sort().join('-');
-      socket.join(roomId);
-      console.log(`User ${socket.username} joined private chat with ${userId}`);
-    });
+socket.on('joinPrivateChat', (data) => {
+
+  const { userId } = data;
+
+  activePrivateChats[socket.userId] = userId;
+
+  const roomId = [socket.userId, userId]
+    .sort()
+    .join('-');
+
+  socket.join(roomId);
+
+  console.log(
+    `User ${socket.username} joined private chat with ${userId}`
+  );
+
+});
 
     socket.on('privateTyping', (data) => {
       const { receiverId } = data;
@@ -343,6 +394,7 @@ socket.emit('error', {
 
       // Remove from active users
       delete activeUsers[socket.userId];
+      delete activePrivateChats[socket.userId];
 
       // Update user status to offline
       await User.findByIdAndUpdate(socket.userId, { status: 'offline' });
