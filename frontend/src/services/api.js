@@ -9,6 +9,17 @@ export const userService = {
   getUserById: (id) => axios.get(`${API_URL}/users/${id}`),
   getRecentChats: () => axios.get(`${API_URL}/users/recent-chats`),
   updateProfile: (id, data) => axios.put(`${API_URL}/users/profile/${id}`, data),
+    blockUser: (currentUserId, userId) =>
+  axios.put(
+    `${API_URL}/users/block/${userId}`,
+    { currentUserId }
+  ),
+
+unblockUser: (currentUserId, userId) =>
+  axios.put(
+    `${API_URL}/users/unblock/${userId}`,
+    { currentUserId }
+  ),
   uploadProfilePicture: (id, formData) => axios.post(`${API_URL}/users/upload-profile-pic/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
@@ -29,17 +40,6 @@ clearChat: (currentUserId, userId) =>
   deleteMessage: (messageId) =>
   axios.delete(
     `${API_URL}/messages/message/${messageId}`
-  ),
-  blockUser: (currentUserId, userId) =>
-  axios.put(
-    `${API_URL}/users/block/${userId}`,
-    { currentUserId }
-  ),
-
-unblockUser: (currentUserId, userId) =>
-  axios.put(
-    `${API_URL}/users/unblock/${userId}`,
-    { currentUserId }
   ),
   uploadFile: (formData) => axios.post(`${API_URL}/messages/upload`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }

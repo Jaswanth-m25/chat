@@ -703,10 +703,13 @@ const handleUserClick = async (userId, username) => {
   Clear Chat
 </button>
 
-        <button className="chat-dropdown-item block-item">
-          <FiSlash />
-          Block User
-        </button>
+<button
+  className="chat-dropdown-item"
+  onClick={handleBlockUser}
+>
+  <FiSlash />
+  Block User
+</button>
 
       </div>
     )}
