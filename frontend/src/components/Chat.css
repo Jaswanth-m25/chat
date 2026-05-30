@@ -1290,11 +1290,11 @@
 .delete-message-btn {
   border: none;
   background: transparent;
-  color: #999;
+  color: #888;
   cursor: pointer;
-  margin-bottom: 6px;
   opacity: 0;
-  transition: 0.2s;
+  transition: all 0.2s ease;
+  margin-right: 8px;
 }
 
 .message:hover .delete-message-btn {
@@ -1302,5 +1302,5 @@
 }
 
 .delete-message-btn:hover {
-  color: #ff5c5c;
+  color: #ff4d4d;
 }

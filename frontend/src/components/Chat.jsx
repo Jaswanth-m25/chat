@@ -769,6 +769,7 @@ const isSent =
   <button
     className="delete-message-btn"
     onClick={() => handleDeleteMessage(msg._id)}
+    title="Delete message"
   >
     <FiTrash2 />
   </button>
