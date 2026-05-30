@@ -1304,3 +1304,8 @@
 .delete-message-btn:hover {
   color: #ff4d4d;
 }
+.blocked-label {
+  color: #ff4d4d;
+  font-size: 13px;
+  margin-top: 4px;
+}

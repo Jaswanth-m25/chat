@@ -645,13 +645,21 @@ const handleUserClick = async (userId, username) => {
                     <div className={`online-indicator ${isUserOnline(activeChat.userId) ? 'online' : 'offline'}`}></div>
                   </div>
                 )}
-                <h2>
-                  {activeChat === 'global'
-                    ? 'Global Chat'
-                    : activeChat.type === 'private'
-                      ? users.find(u => u._id === activeChat.userId)?.username
-                      : 'Group Chat'}
-                </h2>
+                <div>
+  <h2>
+    {activeChat === 'global'
+      ? 'Global Chat'
+      : activeChat.type === 'private'
+        ? users.find(u => u._id === activeChat.userId)?.username
+        : 'Group Chat'}
+  </h2>
+
+  {isBlocked && (
+    <p className="blocked-label">
+      🚫 Blocked
+    </p>
+  )}
+</div>
               </div>
               <div className="chat-header-actions">
 
