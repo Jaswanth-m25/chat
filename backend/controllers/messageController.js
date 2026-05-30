@@ -156,6 +156,14 @@ exports.uploadFile = (req, res) => {
 exports.clearChat = async (req, res) => {
   try {
 
+    console.log("PARAMS:", req.params);
+
+    const currentUserId = req.params.currentUserId;
+    const otherUserId = req.params.userId;
+
+    console.log("CURRENT:", currentUserId);
+    console.log("OTHER:", otherUserId);
+
 const current = new mongoose.Types.ObjectId(currentUserId);
 const other = new mongoose.Types.ObjectId(otherUserId);
 
