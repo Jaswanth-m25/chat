@@ -87,7 +87,10 @@ const handleClearChat = async () => {
 
   try {
 
-    await messageService.clearChat(activeChat.userId);
+    await messageService.clearChat(
+  mongoUser._id,
+  activeChat.userId
+);
 
     setMessages([]);
 

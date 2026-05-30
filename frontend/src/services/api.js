@@ -22,14 +22,9 @@ export const messageService = {
   getRoomMessages: (roomId) => axios.get(`${API_URL}/messages/room/${roomId}`),
   getChatHistory: (params) => axios.get(`${API_URL}/messages/history`, { params }),
   markAsRead: (messageId) => axios.put(`${API_URL}/messages/read/${messageId}`),
-clearChat: (userId) =>
+clearChat: (currentUserId, userId) =>
   axios.delete(
-    `${API_URL}/messages/clear/${userId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    }
+    `${API_URL}/messages/clear/${currentUserId}/${userId}`
   ),
   deleteMessage: (messageId) =>
   axios.delete(

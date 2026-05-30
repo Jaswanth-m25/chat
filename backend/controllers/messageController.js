@@ -153,45 +153,43 @@ exports.uploadFile = (req, res) => {
     res.status(500).json({ message: 'Failed to upload file', error: error.message });
   }
 };
+
 exports.clearChat = async (req, res) => {
   try {
 
-    console.log("PARAMS:", req.params);
+    const currentUserId = new mongoose.Types.ObjectId(
+      req.params.currentUserId
+    );
 
-    const currentUserId = req.params.currentUserId;
-    const otherUserId = req.params.userId;
+    const otherUserId = new mongoose.Types.ObjectId(
+      req.params.userId
+    );
 
-    console.log("CURRENT:", currentUserId);
-    console.log("OTHER:", otherUserId);
+    const result = await Message.deleteMany({
+      $or: [
+        {
+          senderId: currentUserId,
+          receiverId: otherUserId
+        },
+        {
+          senderId: otherUserId,
+          receiverId: currentUserId
+        }
+      ]
+    });
 
-const current = new mongoose.Types.ObjectId(currentUserId);
-const other = new mongoose.Types.ObjectId(otherUserId);
-
-const result = await Message.deleteMany({
-  $or: [
-    {
-      senderId: current,
-      receiverId: other
-    },
-    {
-      senderId: other,
-      receiverId: current
-    }
-  ]
-});
-
-    console.log("DELETE RESULT:", result);
+    console.log("Deleted:", result);
 
     res.json({
-      message: "Chat cleared successfully"
+      message: 'Chat cleared successfully'
     });
 
   } catch (error) {
 
-    console.error("CLEAR CHAT ERROR:", error);
+    console.error(error);
 
     res.status(500).json({
-      message: "Failed to clear chat",
+      message: 'Failed to clear chat',
       error: error.message
     });
 

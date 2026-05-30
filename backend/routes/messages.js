@@ -19,7 +19,7 @@ router.put('/read/:messageId', messageController.markAsRead);
 
 // Upload a file/image
 router.delete(
-  '/clear/:userId',
+  '/clear/:currentUserId/:userId',
   messageController.clearChat
 );
 router.delete('/message/:messageId', messageController.deleteMessage);
