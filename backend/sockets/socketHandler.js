@@ -106,18 +106,20 @@ socket.on('privateMessage', async (data) => {
 
     const { receiverId, content } = data;
 
-    const receiver = await User.findById(receiverId);
+const receiver = await User.findById(receiverId);
 
-    if (
-      receiver?.blockedUsers?.includes(socket.userId)
-    ) {
+if (
+  receiver?.blockedUsers?.some(
+    id => id.toString() === socket.userId
+  )
+) {
 
-      socket.emit('error', {
-        message: 'You are blocked by this user'
-      });
+  socket.emit('error', {
+    message: 'You are blocked by this user'
+  });
 
-      return;
-    }
+  return;
+}
 
     const message = new Message({
       senderId: socket.userId,
