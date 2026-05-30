@@ -144,6 +144,49 @@ alert("User blocked");
   }
 
 };
+const checkBlockedStatus = async (userId) => {
+
+  try {
+
+    const response =
+      await userService.getUserById(
+        mongoUser._id
+      );
+
+    const blocked =
+      response.data.blockedUsers?.includes(
+        userId
+      );
+
+    setIsBlocked(blocked);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+const handleUnblockUser = async () => {
+
+  try {
+
+    await userService.unblockUser(
+      mongoUser._id,
+      activeChat.userId
+    );
+
+    setIsBlocked(false);
+
+    setShowChatMenu(false);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
 const handleEditMessage = async (messageId) => {
 
   try {
@@ -423,6 +466,7 @@ const handleUserClick = async (userId, username) => {
   setSearchTerm('');
 
   await fetchChatHistory('private', userId);
+  await checkBlockedStatus(userId);
   
 
   if (socket) {
@@ -780,10 +824,18 @@ const handleUserClick = async (userId, username) => {
 
 <button
   className="chat-dropdown-item"
-  onClick={handleBlockUser}
+  onClick={
+    isBlocked
+      ? handleUnblockUser
+      : handleBlockUser
+  }
 >
   <FiSlash />
-  Block User
+  {
+    isBlocked
+      ? 'Unblock User'
+      : 'Block User'
+  }
 </button>
 
       </div>
