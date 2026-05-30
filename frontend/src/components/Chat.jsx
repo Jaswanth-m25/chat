@@ -223,6 +223,28 @@ const handleEditMessage = async (messageId) => {
   chatId
 );
         setMessages(response.data);
+
+if (socket) {
+
+  response.data.forEach(msg => {
+
+    const senderId =
+      msg.senderId?._id || msg.senderId;
+
+    if (
+      senderId?.toString() !== mongoUser._id?.toString() &&
+      !msg.isRead
+    ) {
+
+      socket.emit('markMessageRead', {
+        messageId: msg._id
+      });
+
+    }
+
+  });
+
+}
       } else if (chatType === 'room') {
         const response = await messageService.getRoomMessages(chatId);
         setMessages(response.data);
@@ -292,7 +314,20 @@ if (
         setTypingUsers(data.typingUsers || []);
       }
     });
+socket.on('messageReadReceipt', ({ messageId }) => {
 
+  setMessages(prev =>
+    prev.map(msg =>
+      msg._id === messageId
+        ? {
+            ...msg,
+            isRead: true
+          }
+        : msg
+    )
+  );
+
+});
     return () => {
       socket.off('newPrivateMessage');
       socket.off('privateUserTyping');
@@ -388,6 +423,7 @@ const handleUserClick = async (userId, username) => {
   setSearchTerm('');
 
   await fetchChatHistory('private', userId);
+  
 
   if (socket) {
     socket.emit('joinPrivateChat', { userId });
@@ -900,11 +936,23 @@ const isSent =
 )
                       )}
                       <p className="message-time">
-                        {new Date(msg.createdAt).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
+
+  {new Date(msg.createdAt).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  })}
+
+  {isSent && (
+    <span
+      className={`read-status ${
+        msg.isRead ? 'read' : ''
+      }`}
+    >
+      {msg.isRead ? '✓✓' : '✓'}
+    </span>
+  )}
+
+</p>
                     </div>
                   </div>
                 );

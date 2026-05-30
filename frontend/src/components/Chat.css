@@ -1373,3 +1373,12 @@
   color: #aaa;
   margin-left: 6px;
 }
+.read-status {
+  margin-left: 6px;
+  color: #888;
+  font-size: 12px;
+}
+
+.read-status.read {
+  color: #4fc3f7;
+}
