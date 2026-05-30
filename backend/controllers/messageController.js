@@ -194,3 +194,31 @@ exports.clearChat = async (req, res) => {
 
   }
 };
+exports.deleteMessage = async (req, res) => {
+  try {
+
+    const { messageId } = req.params;
+
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      return res.status(404).json({
+        message: 'Message not found'
+      });
+    }
+
+    await Message.findByIdAndDelete(messageId);
+
+    res.json({
+      message: 'Message deleted successfully'
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: 'Failed to delete message',
+      error: error.message
+    });
+
+  }
+};

@@ -100,6 +100,23 @@ const handleClearChat = async () => {
   }
 
 };
+const handleDeleteMessage = async (messageId) => {
+
+  try {
+
+    await messageService.deleteMessage(messageId);
+
+    setMessages(prev =>
+      prev.filter(msg => msg._id !== messageId)
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
   const fetchUsers = async () => {
     try {
       const response = await userService.getAllUsers();
@@ -745,6 +762,14 @@ const isSent =
     {msg.senderId?.username || (typeof msg.senderId === 'string' ? 'You' : msg.senderId)}
   </p>
 )} */}
+{isSent && (
+  <button
+    className="delete-message-btn"
+    onClick={() => handleDeleteMessage(msg._id)}
+  >
+    <FiTrash2 />
+  </button>
+)}
                         
                       {msg.messageType === 'image' ? (
                         <img 

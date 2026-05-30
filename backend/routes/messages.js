@@ -22,4 +22,5 @@ router.delete(
   '/clear/:userId',
   messageController.clearChat
 );
+router.delete('/message/:messageId', messageController.deleteMessage);
 module.exports = router;

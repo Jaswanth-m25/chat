@@ -31,6 +31,10 @@ clearChat: (userId) =>
       }
     }
   ),
+  deleteMessage: (messageId) =>
+  axios.delete(
+    `${API_URL}/messages/message/${messageId}`
+  ),
   uploadFile: (formData) => axios.post(`${API_URL}/messages/upload`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })

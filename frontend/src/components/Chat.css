@@ -1286,3 +1286,21 @@
 .block-item {
   color: #ff6b6b;
 }
+
+.delete-message-btn {
+  border: none;
+  background: transparent;
+  color: #999;
+  cursor: pointer;
+  margin-bottom: 6px;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.message:hover .delete-message-btn {
+  opacity: 1;
+}
+
+.delete-message-btn:hover {
+  color: #ff5c5c;
+}
