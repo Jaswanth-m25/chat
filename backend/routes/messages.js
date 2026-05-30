@@ -23,4 +23,8 @@ router.delete(
   messageController.clearChat
 );
 router.delete('/message/:messageId', messageController.deleteMessage);
+router.put(
+  '/edit/:messageId',
+  messageController.editMessage
+);
 module.exports = router;

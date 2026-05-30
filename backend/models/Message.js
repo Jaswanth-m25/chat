@@ -33,7 +33,15 @@ const messageSchema = new mongoose.Schema(
     readAt: {
       type: Date,
       default: null
-    }
+    },
+    edited: {
+  type: Boolean,
+  default: false
+},
+
+editedAt: {
+  type: Date
+}
   },
   { timestamps: true }
 );

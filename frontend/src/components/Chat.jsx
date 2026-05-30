@@ -21,6 +21,8 @@ export const ChatApp = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [recentChats, setRecentChats] = useState([]);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState(null);
+  const [editedText, setEditedText] = useState('');
   const [showChatMenu, setShowChatMenu] = useState(false);
   const [filteredRecentChats, setFilteredRecentChats] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -134,6 +136,33 @@ setIsBlocked(true);
 alert("User blocked");
 
     setShowChatMenu(false);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+const handleEditMessage = async (messageId) => {
+
+  try {
+
+    const response = await messageService.editMessage(
+      messageId,
+      editedText
+    );
+
+    setMessages(prev =>
+      prev.map(msg =>
+        msg._id === messageId
+          ? response.data
+          : msg
+      )
+    );
+
+    setEditingMessageId(null);
+    setEditedText('');
 
   } catch (error) {
 
@@ -799,13 +828,28 @@ const isSent =
   </p>
 )} */}
 {isSent && (
-  <button
-    className="delete-message-btn"
-    onClick={() => handleDeleteMessage(msg._id)}
-    title="Delete message"
-  >
-    <FiTrash2 />
-  </button>
+  <div className="message-actions">
+
+    <button
+      className="edit-message-btn"
+      onClick={() => {
+        setEditingMessageId(msg._id);
+        setEditedText(msg.content);
+      }}
+      title="Edit Message"
+    >
+      ✏️
+    </button>
+
+    <button
+      className="delete-message-btn"
+      onClick={() => handleDeleteMessage(msg._id)}
+      title="Delete Message"
+    >
+      <FiTrash2 />
+    </button>
+
+  </div>
 )}
                         
                       {msg.messageType === 'image' ? (
@@ -825,7 +869,35 @@ const isSent =
                           <FiFile style={{ marginRight: '5px' }} /> Download File
                         </a>
                       ) : (
-                        <p className="message-text">{msg.content}</p>
+                        editingMessageId === msg._id ? (
+  <div className="edit-message-container">
+
+    <input
+      type="text"
+      value={editedText}
+      onChange={(e) => setEditedText(e.target.value)}
+      className="edit-message-input"
+    />
+
+    <button
+      className="save-edit-btn"
+      onClick={() => handleEditMessage(msg._id)}
+    >
+      Save
+    </button>
+
+  </div>
+) : (
+  <p className="message-text">
+    {msg.content}
+
+    {msg.edited && (
+      <span className="edited-label">
+        (edited)
+      </span>
+    )}
+  </p>
+)
                       )}
                       <p className="message-time">
                         {new Date(msg.createdAt).toLocaleTimeString([], {

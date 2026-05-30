@@ -1318,3 +1318,58 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+.message-actions {
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.message:hover .message-actions {
+  opacity: 1;
+}
+
+.edit-message-btn,
+.delete-message-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #999;
+}
+
+.edit-message-btn:hover {
+  color: #4CAF50;
+}
+
+.delete-message-btn:hover {
+  color: #ff4d4d;
+}
+
+.edit-message-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.edit-message-input {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #222;
+  color: white;
+}
+
+.save-edit-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.edited-label {
+  font-size: 11px;
+  color: #aaa;
+  margin-left: 6px;
+}

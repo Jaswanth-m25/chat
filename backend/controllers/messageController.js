@@ -223,3 +223,30 @@ exports.deleteMessage = async (req, res) => {
 
   }
 };
+exports.editMessage = async (req, res) => {
+
+  try {
+
+    const { content } = req.body;
+
+    const message = await Message.findByIdAndUpdate(
+      req.params.messageId,
+      {
+        content,
+        edited: true,
+        editedAt: new Date()
+      },
+      { new: true }
+    );
+
+    res.json(message);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: 'Failed to edit message'
+    });
+
+  }
+
+};

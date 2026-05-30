@@ -115,7 +115,7 @@ if (
 ) {
 
   socket.emit('error', {
-    message: 'You are blocked by this user'
+    message: 'Message could not be delivered'
   });
 
   return;
