@@ -162,3 +162,55 @@ exports.getRecentChats = async (req, res) => {
     });
   }
 };
+exports.blockUser = async (req, res) => {
+  try {
+
+    const { currentUserId } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      currentUserId,
+      {
+        $addToSet: {
+          blockedUsers: req.params.userId
+        }
+      },
+      { new: true }
+    );
+
+    res.json(user);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: 'Failed to block user'
+    });
+
+  }
+};
+exports.unblockUser = async (req, res) => {
+
+  try {
+
+    const { currentUserId } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      currentUserId,
+      {
+        $pull: {
+          blockedUsers: req.params.userId
+        }
+      },
+      { new: true }
+    );
+
+    res.json(user);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: 'Failed to unblock user'
+    });
+
+  }
+
+};

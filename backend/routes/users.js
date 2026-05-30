@@ -42,7 +42,8 @@ router.get('/recent-chats', userController.getRecentChats);
 
 // Get user by ID
 router.get('/:id', userController.getUserById);
-
+router.put('/block/:userId', userController.blockUser);
+router.put('/unblock/:userId', userController.unblockUser);
 // Update profile
 router.put('/profile/:id',userController.updateProfile);
 

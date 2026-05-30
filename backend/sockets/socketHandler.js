@@ -101,20 +101,32 @@ io.use(async (socket, next) => {
 
     // =================== PRIVATE CHAT EVENTS ===================
 
-    socket.on('privateMessage', async (data) => {
-      try {
-        const { receiverId, content } = data;
-        console.log("SENDER:", socket.userId);
-console.log("RECEIVER:", receiverId);
-console.log("CONTENT:", content);
+socket.on('privateMessage', async (data) => {
+  try {
 
-        const message = new Message({
-          senderId: socket.userId,
-          receiverId,
-          content,
-          messageType: data.messageType || 'text'
-        });
-        await message.save();
+    const { receiverId, content } = data;
+
+    const receiver = await User.findById(receiverId);
+
+    if (
+      receiver?.blockedUsers?.includes(socket.userId)
+    ) {
+
+      socket.emit('error', {
+        message: 'You are blocked by this user'
+      });
+
+      return;
+    }
+
+    const message = new Message({
+      senderId: socket.userId,
+      receiverId,
+      content,
+      messageType: data.messageType || 'text'
+    });
+
+    await message.save();
         await message.populate('senderId', 'username avatar');
         await message.populate('receiverId', 'username avatar');
 

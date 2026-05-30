@@ -30,6 +30,17 @@ clearChat: (currentUserId, userId) =>
   axios.delete(
     `${API_URL}/messages/message/${messageId}`
   ),
+  blockUser: (currentUserId, userId) =>
+  axios.put(
+    `${API_URL}/users/block/${userId}`,
+    { currentUserId }
+  ),
+
+unblockUser: (currentUserId, userId) =>
+  axios.put(
+    `${API_URL}/users/unblock/${userId}`,
+    { currentUserId }
+  ),
   uploadFile: (formData) => axios.post(`${API_URL}/messages/upload`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })

@@ -120,6 +120,26 @@ const handleDeleteMessage = async (messageId) => {
   }
 
 };
+const handleBlockUser = async () => {
+
+  try {
+
+    await userService.blockUser(
+      mongoUser._id,
+      activeChat.userId
+    );
+
+    alert("User blocked");
+
+    setShowChatMenu(false);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
   const fetchUsers = async () => {
     try {
       const response = await userService.getAllUsers();

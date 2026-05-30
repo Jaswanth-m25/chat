@@ -36,6 +36,12 @@ const userSchema = new mongoose.Schema(
       enum: ['online', 'offline', 'away'],
       default: 'offline'
     },
+    blockedUsers: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+],
     isTyping: {
       type: Boolean,
       default: false
