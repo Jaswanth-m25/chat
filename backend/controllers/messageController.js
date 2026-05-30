@@ -2,7 +2,7 @@ const Message = require('../models/Message');
 const multer = require('multer');
 const cloudinary = require('../config/cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
+const mongoose = require('mongoose');
 // Get messages between two users
 exports.getPrivateMessages = async (req, res) => {
 
@@ -156,26 +156,21 @@ exports.uploadFile = (req, res) => {
 exports.clearChat = async (req, res) => {
   try {
 
-    console.log("PARAMS:", req.params);
+const current = new mongoose.Types.ObjectId(currentUserId);
+const other = new mongoose.Types.ObjectId(otherUserId);
 
-    const currentUserId = req.params.currentUserId;
-    const otherUserId = req.params.userId;
-
-    console.log("CURRENT:", currentUserId);
-    console.log("OTHER:", otherUserId);
-
-    const result = await Message.deleteMany({
-      $or: [
-        {
-          senderId: currentUserId,
-          receiverId: otherUserId
-        },
-        {
-          senderId: otherUserId,
-          receiverId: currentUserId
-        }
-      ]
-    });
+const result = await Message.deleteMany({
+  $or: [
+    {
+      senderId: current,
+      receiverId: other
+    },
+    {
+      senderId: other,
+      receiverId: current
+    }
+  ]
+});
 
     console.log("DELETE RESULT:", result);
 
