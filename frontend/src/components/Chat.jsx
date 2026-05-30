@@ -948,7 +948,12 @@ const isSent =
         msg.isRead ? 'read' : ''
       }`}
     >
-      {msg.isRead ? '✓✓' : '✓'}
+      {msg.isRead
+  ? '✓✓'
+  : msg.isDelivered
+    ? '✓✓'
+    : '✓'
+}
     </span>
   )}
 

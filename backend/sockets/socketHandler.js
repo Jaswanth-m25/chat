@@ -129,6 +129,19 @@ if (
     });
 
     await message.save();
+    if (activeUsers[receiverId]) {
+
+  await Message.findByIdAndUpdate(
+    message._id,
+    {
+      isDelivered: true,
+      deliveredAt: new Date()
+    }
+  );
+
+  message.isDelivered = true;
+
+}
         await message.populate('senderId', 'username avatar');
         await message.populate('receiverId', 'username avatar');
 

@@ -26,6 +26,15 @@ const messageSchema = new mongoose.Schema(
       enum: ['text', 'image', 'file'],
       default: 'text'
     },
+    isDelivered: {
+  type: Boolean,
+  default: false
+},
+
+deliveredAt: {
+  type: Date,
+  default: null
+},
     isRead: {
       type: Boolean,
       default: false
