@@ -107,7 +107,9 @@ socket.on('privateMessage', async (data) => {
     const { receiverId, content } = data;
 
 const receiver = await User.findById(receiverId);
-
+console.log("Receiver:", receiver.username);
+console.log("Blocked Users:", receiver.blockedUsers);
+console.log("Sender:", socket.userId);
 if (
   receiver?.blockedUsers?.some(
     id => id.toString() === socket.userId
