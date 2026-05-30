@@ -20,6 +20,7 @@ export const ChatApp = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [recentChats, setRecentChats] = useState([]);
+  const [isBlocked, setIsBlocked] = useState(false);
   const [showChatMenu, setShowChatMenu] = useState(false);
   const [filteredRecentChats, setFilteredRecentChats] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -128,8 +129,9 @@ const handleBlockUser = async () => {
       mongoUser._id,
       activeChat.userId
     );
+setIsBlocked(true);
 
-    alert("User blocked");
+alert("User blocked");
 
     setShowChatMenu(false);
 
@@ -866,7 +868,7 @@ const isSent =
                 placeholder="Type a message..."
                 className="message-input"
               />
-              <button onClick={handleSendMessage} className="send-btn">
+              <button onClick={handleSendMessage} disabled={isBlocked} className="send-btn">
                 <FiSend />
               </button>
             </div>
