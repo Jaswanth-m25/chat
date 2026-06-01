@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { SocketProvider } from './context/SocketContext';
 
 import LoginSignup from './components/LoginSignup';
+import HomePage from './components/HomePage';
 import { ChatApp } from './components/Chat';
 import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
@@ -105,8 +106,8 @@ function App() {
           }
         />
 
-        {/* Default Route */}
-        <Route path="/" element={<Navigate to="/chat" />} />
+        {/* Home Page */}
+        <Route path="/" element={<HomePage />} />
 
       </Routes>
     </Router>
