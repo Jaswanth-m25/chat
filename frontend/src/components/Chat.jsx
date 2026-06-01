@@ -74,10 +74,7 @@ export const ChatApp = () => {
     }
   }, [chatSearchTerm, recentChats]);
 useEffect(() => {
-  console.log(
-    "ACTIVE CHAT CHANGED:",
-    activeChat
-  );
+
 }, [activeChat]);
   // Filter users based on search term
   useEffect(() => {
@@ -114,6 +111,23 @@ const handleClearChat = async () => {
     setMessages([]);
 
     setShowChatMenu(false);
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+const handleCopyMessage = async (text) => {
+
+  try {
+
+    await navigator.clipboard.writeText(text);
+
+    alert("Message copied");
+
+    setOpenMessageMenu(null);
 
   } catch (error) {
 
@@ -357,12 +371,7 @@ if (socket) {
     if (!socket) return;
   
 socket.on('newPrivateMessage', (msg) => {
-console.log("SENDER:", msg.senderId);
-console.log("RECEIVER:", msg.receiverId);
-console.log("ACTIVE CHAT:", activeChat);
-console.log("CURRENT USER:", mongoUser._id);
-console.log("ACTIVE CHAT:", activeChat);
-console.log("CURRENT USER:", mongoUser._id);
+
   const senderId = msg.senderId?._id || msg.senderId;
   const receiverId = msg.receiverId?._id || msg.receiverId;
   const isMyMessage =
@@ -379,7 +388,7 @@ if (
     setMessages((prev) => [...prev, msg]);
   }
 else if (!isMyMessage) {
-console.log("ADDING UNREAD FOR:", senderId);
+
   setUnreadMessages((prev) => ({
     ...prev,
     [senderId]: (prev[senderId] || 0) + 1
@@ -501,8 +510,6 @@ const handleUserClick = async (userId, username) => {
     ...prev,
     [userId]: 0
   }));
-console.log("OPENING CHAT WITH:", userId);
-console.log("CURRENT USER:", mongoUser._id);
   console.log(
   "SETTING ACTIVE CHAT:",
   userId
@@ -872,10 +879,10 @@ setActiveChat({
     {showChatMenu && (
       <div className="chat-dropdown-menu">
 
-        <button className="chat-dropdown-item">
+        {/* <button className="chat-dropdown-item">
           <FiTrash2 />
           Delete Messages
-        </button>
+        </button> */}
 
 <button
   className="chat-dropdown-item"
@@ -1020,6 +1027,20 @@ const isSent =
         >
           Reply
         </button>
+          <button
+    className="message-dropdown-item"
+    onClick={() => handleCopyMessage(msg.content)}
+  >
+    Copy
+  </button>
+          <button
+          className="message-dropdown-item"
+          onClick={() => {
+            handleDeleteMessage(msg._id);
+          }}
+        >
+          Delete
+        </button>
 
       </div>
     )}
@@ -1045,6 +1066,7 @@ const isSent =
 
     {openMessageMenu === msg._id && (
       <div className="message-dropdown">
+        
 
         <button
           className="message-dropdown-item"
@@ -1052,7 +1074,12 @@ const isSent =
         >
           Reply
         </button>
-
+<button
+  className="message-dropdown-item"
+  onClick={() => handleCopyMessage(msg.content)}
+>
+  Copy
+</button>
         <button
           className="message-dropdown-item"
           onClick={() => {
