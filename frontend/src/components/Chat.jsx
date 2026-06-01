@@ -4,6 +4,7 @@ import { useSocket } from '../context/SocketContext';
 import { userService, messageService, roomService } from '../services/api';
 import {FiSend, FiUsers, FiLogOut, FiPaperclip, FiFile, FiUser, FiSearch, FiX } from 'react-icons/fi';
 import { FiMoreVertical, FiTrash2, FiSlash, FiXCircle } from 'react-icons/fi';
+import { FiChevronDown } from 'react-icons/fi';
 import { Profile } from './Profile';
 import './Chat.css';
 
@@ -24,6 +25,7 @@ export const ChatApp = () => {
   const [editingMessageId, setEditingMessageId] = useState(null);
   const [editedText, setEditedText] = useState('');
   const [showChatMenu, setShowChatMenu] = useState(false);
+  const [openMessageMenu, setOpenMessageMenu] = useState(null);
   const [filteredRecentChats, setFilteredRecentChats] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -37,6 +39,7 @@ export const ChatApp = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [userAvatars, setUserAvatars] = useState({});
   const [showDropdown, setShowDropdown] = useState(false);
+  const [replyingTo, setReplyingTo] = useState(null);
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -213,6 +216,15 @@ const handleEditMessage = async (messageId) => {
 
   }
 
+};
+
+const handleReplyMessage = (message) => {
+  setReplyingTo(message);
+  setOpenMessageMenu(null);
+};
+
+const handleCancelReply = () => {
+  setReplyingTo(null);
 };
   const fetchUsers = async () => {
     try {
@@ -402,15 +414,21 @@ socket.on('messageReadReceipt', ({ messageId }) => {
   const handleSendMessage = () => {
     if (!message.trim() || !socket) return;
 
+    const messagePayload = { 
+      content: message,
+      ...(replyingTo && { replyTo: replyingTo._id })
+    };
+
     if (activeChat === 'global') {
-      socket.emit('globalMessage', { content: message });
+      socket.emit('globalMessage', messagePayload);
     } else if (activeChat?.type === 'private') {
-      socket.emit('privateMessage', { receiverId: activeChat.userId, content: message });
+      socket.emit('privateMessage', { receiverId: activeChat.userId, ...messagePayload });
     } else if (activeChat?.type === 'room') {
-      socket.emit('roomMessage', { roomId: activeChat.roomId, content: message });
+      socket.emit('roomMessage', { roomId: activeChat.roomId, ...messagePayload });
     }
 
     setMessage('');
+    setReplyingTo(null);
     setIsTyping(false);
 
     if (socket) {
@@ -548,7 +566,7 @@ const handleUserClick = async (userId, username) => {
       {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebar-header">
-          <div className="logo">Chat App</div>
+          <div className="logo">Chat Hub</div>
           <div className="header-actions" ref={dropdownRef}>
             <button 
               className="more-options-btn"
@@ -915,31 +933,108 @@ const isSent =
     {msg.senderId?.username || (typeof msg.senderId === 'string' ? 'You' : msg.senderId)}
   </p>
 )} */}
+
+{!isSent && (
+  <div className="message-menu-wrapper">
+
+<button
+  className="message-arrow-btn"
+  onClick={() =>
+    setOpenMessageMenu(
+      openMessageMenu === msg._id
+        ? null
+        : msg._id
+    )
+  }
+>
+  <FiChevronDown size={14} />
+</button>
+
+    {openMessageMenu === msg._id && (
+      <div className="message-dropdown">
+
+        <button
+          className="message-dropdown-item"
+          onClick={() => handleReplyMessage(msg)}
+        >
+          Reply
+        </button>
+
+      </div>
+    )}
+
+  </div>
+)}
+
 {isSent && (
-  <div className="message-actions">
+  <div className="message-menu-wrapper">
 
-    <button
-      className="edit-message-btn"
-      onClick={() => {
-        setEditingMessageId(msg._id);
-        setEditedText(msg.content);
-      }}
-      title="Edit Message"
-    >
-      ✏️
-    </button>
+<button
+  className="message-arrow-btn"
+  onClick={() =>
+    setOpenMessageMenu(
+      openMessageMenu === msg._id
+        ? null
+        : msg._id
+    )
+  }
+>
+  <FiChevronDown size={14} />
+</button>
 
-    <button
-      className="delete-message-btn"
-      onClick={() => handleDeleteMessage(msg._id)}
-      title="Delete Message"
-    >
-      <FiTrash2 />
-    </button>
+    {openMessageMenu === msg._id && (
+      <div className="message-dropdown">
+
+        <button
+          className="message-dropdown-item"
+          onClick={() => handleReplyMessage(msg)}
+        >
+          Reply
+        </button>
+
+        <button
+          className="message-dropdown-item"
+          onClick={() => {
+            setEditingMessageId(msg._id);
+            setEditedText(msg.content);
+            setOpenMessageMenu(null);
+          }}
+        >
+          Edit
+        </button>
+
+        <button
+          className="message-dropdown-item delete"
+          onClick={() => {
+            handleDeleteMessage(msg._id);
+            setOpenMessageMenu(null);
+          }}
+        >
+          Delete
+        </button>
+
+      </div>
+    )}
 
   </div>
 )}
                         
+                      {msg.replyTo && (
+                        <div className="message-reply-context">
+                          <div className="reply-context-left-border"></div>
+                          <div className="reply-context-content">
+                            <p className="reply-context-label">Replying to</p>
+                            <p className="reply-context-sender">
+                              {msg.replyTo?.senderId?.username || msg.replyTo?.senderName || 'Unknown'}
+                            </p>
+                            <p className="reply-context-text">
+                              {msg.replyTo?.content?.substring(0, 60) || 'Original message'}
+                              {msg.replyTo?.content?.length > 60 ? '...' : ''}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
                       {msg.messageType === 'image' ? (
                         <img 
                           src={msg.content}
@@ -1034,6 +1129,26 @@ const isSent =
                 style={{ display: 'none' }}
                 onChange={handleFileUpload}
               />
+
+              {replyingTo && (
+                <div className="reply-preview">
+                  <div className="reply-preview-content">
+                    <p className="reply-preview-sender">Replying to <strong>{replyingTo.senderId?.username || 'Unknown'}</strong></p>
+                    <p className="reply-preview-text">
+                      {replyingTo.content?.substring(0, 50)}
+                      {replyingTo.content?.length > 50 ? '...' : ''}
+                    </p>
+                  </div>
+                  <button 
+                    className="reply-preview-cancel"
+                    onClick={handleCancelReply}
+                    title="Cancel reply"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
               <button onClick={() => fileInputRef.current?.click()} className="attach-btn" title="Attach file">
                 <FiPaperclip />
               </button>
