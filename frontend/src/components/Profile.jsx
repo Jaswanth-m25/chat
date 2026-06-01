@@ -94,21 +94,30 @@ useEffect(() => {
       </div>
     );
   }
+const containerClass = isModal
+  ? 'profile-modal-wrapper'
+  : 'profile-page-wrapper';
 
-  const containerClass = isModal ? 'profile-modal-wrapper' : 'profile-page-wrapper';
+return (
+  <div className={containerClass}>
 
-  return (
-    <div className={containerClass}>
+    <div
+      className={`profile-container ${
+        isModal ? 'profile-modal' : ''
+      }`}
+    >
+
       {isModal && (
         <div className="profile-modal-header">
-          {/* <h2>User Profile</h2> */}
-          <button className="profile-close-btn" onClick={onClose}>
+          <button
+            className="profile-close-btn"
+            onClick={onClose}
+          >
             <FiX size={24} />
           </button>
         </div>
       )}
 
-      <div className={`profile-container ${isModal ? 'profile-modal' : ''}`}>
         {/* Profile Header */}
         <div className="profile-header">
 <div className="profile-avatar-container">

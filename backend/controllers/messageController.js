@@ -141,23 +141,36 @@ const storage = new CloudinaryStorage({
 
 exports.upload = multer({ storage: storage });
 
-exports.uploadFile = (req, res) => {
+exports.uploadFile = async (req, res) => {
   try {
+
     if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+      return res.status(400).json({
+        message: 'No file uploaded'
+      });
     }
 
-    const fileUrl = req.file.path;
-    const mimetype = req.file.mimetype;
-    const isImage = mimetype.startsWith('image/');
-    
+    let messageType = 'file';
+
+    if (
+      req.file.mimetype.startsWith('image/')
+    ) {
+      messageType = 'image';
+    }
+
     res.json({
-      url: fileUrl,
-      messageType: isImage ? 'image' : 'file',
-      originalName: req.file.originalname
+      url: req.file.path,
+      messageType
     });
+
   } catch (error) {
-    res.status(500).json({ message: 'Failed to upload file', error: error.message });
+
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Upload failed'
+    });
+
   }
 };
 

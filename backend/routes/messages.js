@@ -1,10 +1,30 @@
 const express = require('express');
 const router = express.Router();
+const cloudinary = require('../config/cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
 const messageController = require('../controllers/messageController');
 
 // const { clearChat } = require('../controllers/messageController');
 // const authenticateToken = require('../middleware/auth');
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
 
+    let resourceType = 'raw';
+
+    if (file.mimetype.startsWith('image/')) {
+      resourceType = 'image';
+    }
+
+    return {
+      folder: 'chat-files',
+      resource_type: resourceType
+    };
+  }
+});
+
+const upload = multer({ storage });
 // Get private messages with a user
 router.get('/private/:currentUserId/:userId', messageController.getPrivateMessages);
 
@@ -16,7 +36,11 @@ router.get('/history', messageController.getChatHistory);
 
 // Mark message as read
 router.put('/read/:messageId', messageController.markAsRead);
-
+router.post(
+  '/upload',
+  upload.single('file'),
+  messageController.uploadFile
+);
 // Upload a file/image
 router.delete(
   '/clear/:currentUserId/:userId',

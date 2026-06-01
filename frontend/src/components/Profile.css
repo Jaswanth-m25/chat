@@ -19,17 +19,24 @@
 /* Modal Wrapper */
 .profile-modal-wrapper {
   position: fixed;
+
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
+
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(0,0,0,0.92);
+
   backdrop-filter: blur(12px);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
+
+  z-index: 999999;
+
+  padding: 20px;
 }
 
 /* Page Wrapper */
@@ -38,7 +45,7 @@
   background: var(--bg-primary);
   padding: 2rem;
   display: flex;
--align-items: center;
+  align-items: center;
   justify-content: center;
 }
 
@@ -46,13 +53,25 @@
 .profile-container {
   background: var(--bg-secondary);
   border-radius: 1.5rem;
-  overflow: hidden;
-  box-shadow: var(--card-shadow), 0 0 0 1px var(--border-glow);
+
   width: 100%;
   max-width: 800px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  box-shadow:
+    var(--card-shadow),
+    0 0 0 1px var(--border-glow);
+
   border: 1px solid rgba(0, 212, 255, 0.1);
-  position: relative; /* Important for absolute positioning */
+
+  position: relative;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .profile-container:hover {
