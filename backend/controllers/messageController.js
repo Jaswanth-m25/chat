@@ -10,21 +10,28 @@ exports.getPrivateMessages = async (req, res) => {
 
     const { userId, currentUserId } = req.params;
 
-    const messages = await Message.find({
-      $or: [
-        {
-          senderId: currentUserId,
-          receiverId: userId
-        },
-        {
-          senderId: userId,
-          receiverId: currentUserId
-        }
-      ]
-    })
-    .populate('senderId', 'username avatar')
-    .populate('receiverId', 'username avatar')
-    .sort({ createdAt: 1 });
+const messages = await Message.find({
+  $or: [
+    {
+      senderId: currentUserId,
+      receiverId: userId
+    },
+    {
+      senderId: userId,
+      receiverId: currentUserId
+    }
+  ]
+})
+.populate('senderId', 'username avatar')
+.populate('receiverId', 'username avatar')
+.populate({
+  path: 'replyTo',
+  populate: {
+    path: 'senderId',
+    select: 'username avatar'
+  }
+})
+.sort({ createdAt: 1 });
 
     res.json(messages);
 

@@ -143,7 +143,8 @@ if (
       senderId: socket.userId,
       receiverId,
       content,
-      messageType: data.messageType || 'text'
+      messageType: data.messageType || 'text',
+      replyTo: data.replyTo || null
     });
 
     await message.save();
@@ -323,7 +324,8 @@ socket.on('joinPrivateChat', (data) => {
           senderId: socket.userId,
           roomId,
           content,
-          messageType: data.messageType || 'text'
+          messageType: data.messageType || 'text',
+          replyTo: data.replyTo || null
         });
         await message.save();
         await message.populate('senderId', 'username avatar');
