@@ -73,7 +73,12 @@ export const ChatApp = () => {
       setFilteredRecentChats(filtered);
     }
   }, [chatSearchTerm, recentChats]);
-
+useEffect(() => {
+  console.log(
+    "ACTIVE CHAT CHANGED:",
+    activeChat
+  );
+}, [activeChat]);
   // Filter users based on search term
   useEffect(() => {
     if (searchTerm.trim() === '') {
@@ -262,7 +267,10 @@ const handleCancelReply = () => {
   const fetchRecentChats = async () => {
     try {
       const response = await userService.getRecentChats();
-      setRecentChats(response.data);
+
+console.log("RECENT CHATS:", response.data);
+
+setRecentChats(response.data);
       setFilteredRecentChats(response.data);
     } catch (error) {
       console.error('Failed to fetch recent chats:', error);
@@ -349,9 +357,16 @@ if (socket) {
     if (!socket) return;
   
 socket.on('newPrivateMessage', (msg) => {
-
+console.log("SENDER:", msg.senderId);
+console.log("RECEIVER:", msg.receiverId);
+console.log("ACTIVE CHAT:", activeChat);
+console.log("CURRENT USER:", mongoUser._id);
+console.log("ACTIVE CHAT:", activeChat);
+console.log("CURRENT USER:", mongoUser._id);
   const senderId = msg.senderId?._id || msg.senderId;
   const receiverId = msg.receiverId?._id || msg.receiverId;
+  const isMyMessage =
+  senderId?.toString() === mongoUser?._id?.toString();
 
   // If current chat is open
 if (
@@ -363,13 +378,14 @@ if (
 ){
     setMessages((prev) => [...prev, msg]);
   }
-  else {
-    // increase unread count
-    setUnreadMessages((prev) => ({
-      ...prev,
-      [senderId]: (prev[senderId] || 0) + 1
-    }));
-  }
+else if (!isMyMessage) {
+console.log("ADDING UNREAD FOR:", senderId);
+  setUnreadMessages((prev) => ({
+    ...prev,
+    [senderId]: (prev[senderId] || 0) + 1
+  }));
+
+}
 });
 
     socket.on('privateUserTyping', (data) => {
@@ -485,9 +501,17 @@ const handleUserClick = async (userId, username) => {
     ...prev,
     [userId]: 0
   }));
+console.log("OPENING CHAT WITH:", userId);
+console.log("CURRENT USER:", mongoUser._id);
+  console.log(
+  "SETTING ACTIVE CHAT:",
+  userId
+);
 
-  setActiveChat({ type: 'private', userId });
-
+setActiveChat({
+  type: 'private',
+  userId
+});
   setShowUserList(false);
   setSearchTerm('');
 
@@ -651,7 +675,11 @@ const handleUserClick = async (userId, username) => {
             </div>
           </div>
           <div className="recent-chats">
-            {filteredRecentChats.slice(0, 10).map((chat, idx) => (
+            {filteredRecentChats
+  .filter(chat => chat._id !== mongoUser._id)
+  .slice(0, 10)
+  .map((chat, idx) => (
+              
               <div
                 key={idx}
                 className={`chat-item ${activeChat?.type === 'private' && activeChat.userId === chat._id ? 'active' : ''}`}
@@ -724,7 +752,9 @@ const handleUserClick = async (userId, username) => {
             </div>
             <div className="users-list">
               {filteredUsers.length > 0 ? (
-                filteredUsers.map((u) => (
+                filteredUsers
+  .filter(u => u._id !== mongoUser._id)
+  .map((u) => (
                   <div
                     key={u._id}
                     className="user-item"
