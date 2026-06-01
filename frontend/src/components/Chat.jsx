@@ -44,7 +44,15 @@ export const ChatApp = () => {
   const typingTimeoutRef = useRef(null);
   const fileInputRef = useRef(null);
   const dropdownRef = useRef(null);
-  const [unreadMessages, setUnreadMessages] = useState({});
+  const [unreadMessages, setUnreadMessages] = useState(() => {
+    const saved = localStorage.getItem('unreadMessages');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // Persist unread messages to localStorage
+  useEffect(() => {
+    localStorage.setItem('unreadMessages', JSON.stringify(unreadMessages));
+  }, [unreadMessages]);
 
   // Fetch initial data
   useEffect(() => {
@@ -620,7 +628,14 @@ const handleUserClick = async (userId, username) => {
 
         <div className="sidebar-section">
           <div className="section-header-with-search">
-            <h3>Recent Chats</h3>
+            <div className="section-header-title">
+              <h3>Recent Chats</h3>
+              {Object.values(unreadMessages).reduce((a, b) => a + b, 0) > 0 && (
+                <div className="total-unread-badge">
+                  {Object.values(unreadMessages).reduce((a, b) => a + b, 0)}
+                </div>
+              )}
+            </div>
             <div className="chats-search">
               <FiSearch className="search-icon-small" />
               <input
@@ -934,6 +949,22 @@ const isSent =
   </p>
 )} */}
 
+                      {msg.replyTo && (
+                        <div className="message-reply-context">
+                          <div className="reply-context-left-border"></div>
+                          <div className="reply-context-content">
+                            <p className="reply-context-label">Replying to</p>
+                            <p className="reply-context-sender">
+                              {msg.replyTo?.senderId?.username || msg.replyTo?.senderName || 'Unknown'}
+                            </p>
+                            <p className="reply-context-text">
+                              {msg.replyTo?.content?.substring(0, 60) || 'Original message'}
+                              {msg.replyTo?.content?.length > 60 ? '...' : ''}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
 {!isSent && (
   <div className="message-menu-wrapper">
 
@@ -1019,22 +1050,6 @@ const isSent =
   </div>
 )}
                         
-                      {msg.replyTo && (
-                        <div className="message-reply-context">
-                          <div className="reply-context-left-border"></div>
-                          <div className="reply-context-content">
-                            <p className="reply-context-label">Replying to</p>
-                            <p className="reply-context-sender">
-                              {msg.replyTo?.senderId?.username || msg.replyTo?.senderName || 'Unknown'}
-                            </p>
-                            <p className="reply-context-text">
-                              {msg.replyTo?.content?.substring(0, 60) || 'Original message'}
-                              {msg.replyTo?.content?.length > 60 ? '...' : ''}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
                       {msg.messageType === 'image' ? (
                         <img 
                           src={msg.content}
