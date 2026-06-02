@@ -43,7 +43,7 @@ const HomePage = () => {
         <div className="navbar-content">
           <div className="logo">
             <span className="logo-icon">💬</span>
-            <span className="logo-text">ChatHub</span>
+            <span className="logo-text">ChatFlow</span>
           </div>
           <button 
             className="nav-cta-btn"
@@ -87,7 +87,7 @@ const HomePage = () => {
       {/* Features Section */}
       <section className="features-section">
         <div className="features-header">
-          <h2 className="section-title">Why Choose ChatHub?</h2>
+          <h2 className="section-title">Why Choose ChatFlow?</h2>
           <p className="section-subtitle">Powerful features designed for modern communication</p>
         </div>
 
@@ -138,7 +138,7 @@ const HomePage = () => {
       <footer className="home-footer">
         <div className="footer-content">
           <div className="footer-section">
-            <h4>ChatHub</h4>
+            <h4>ChatFlow</h4>
             <p>Connecting people through real-time messaging</p>
           </div>
           <div className="footer-section">
@@ -161,7 +161,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2024 ChatHub. All rights reserved.</p>
+          <p>&copy; 2024 ChatFlow. All rights reserved.</p>
         </div>
       </footer>
     </div>

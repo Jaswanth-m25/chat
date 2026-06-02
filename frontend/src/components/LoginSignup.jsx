@@ -10,7 +10,7 @@ const LoginSignup = () => {
       <div className="auth-card">
 
 <div className="brand">
-  <h1>💬 ChatHub</h1>
+  <h1>💬 ChatFlow</h1>
 </div>
 
 <SignIn />

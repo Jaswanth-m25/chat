@@ -606,7 +606,7 @@ setActiveChat({
       {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebar-header">
-          <div className="logo">Chat Hub</div>
+          <div className="logo">ChatFlow</div>
           <div className="header-actions" ref={dropdownRef}>
             <button 
               className="more-options-btn"
