@@ -4,41 +4,53 @@ A full-featured real-time chat application built with MERN stack (MongoDB, Expre
 
 ## Features
 
-✨ **User Authentication**
-- User registration with email validation
-- Secure login with JWT tokens
-- Protected routes
+### ✨ User Authentication & Authorization
+- **User Registration**: Email validation with unique username/email constraints
+- **Secure Login**: JWT token-based authentication with expiration
+- **Session Management**: Automatic session persistence and refresh token support
+- **Protected Routes**: Role-based access control on frontend and backend
+- **Password Security**: bcryptjs hashing with salt rounds
 
-🔐 **Security**
-- JWT-based authentication
-- Password hashing with bcryptjs
-- Protected API endpoints
+### 🔐 Security Features
+- **JWT Authentication**: Secure token-based API access
+- **Password Hashing**: Industry-standard bcryptjs encryption (10 salt rounds)
+- **CORS Protection**: Configured CORS for frontend-backend communication
+- **Input Validation**: Request body validation on all endpoints
+- **Protected Endpoints**: Authorization middleware on sensitive operations
+- **Error Handling**: Secure error messages without exposing sensitive info
 
-💬 **Messaging Features**
-- Global chat room
-- Private one-to-one messaging
-- Group chat rooms
-- Message history with pagination
-- Message timestamps and read receipts
+### 💬 Messaging Capabilities
+- **Private Messaging**: One-to-one direct messages between users
+- **Group Chat Rooms**: Create and manage group conversations
+- **Global Chat Room**: Server-wide public chat channel
+- **Message History**: Persistent storage with pagination support
+- **Timestamps**: Automatic message timestamps for chronological ordering
+- **Read Receipts**: Track which users have read messages
+- **Message Persistence**: MongoDB storage for message history
 
-⚡ **Real-Time Features**
-- Real-time messaging using Socket.IO
-- Online/offline user status
-- Typing indicators for all chat types
-- Online users list
-- User presence tracking
+### ⚡ Real-Time Features (Socket.IO)
+- **Live Messaging**: Instant message delivery without page refresh
+- **Typing Indicators**: See when others are typing in real-time
+- **User Presence**: Online/offline status with automatic detection
+- **User Activity Tracking**: User join/leave notifications
+- **Online User List**: Real-time list of active users
+- **Automatic Reconnection**: Handles connection loss gracefully
+- **Room-based Events**: Targeted messaging to specific chat rooms
 
-🎨 **User Interface**
-- Responsive design (mobile, tablet, desktop)
-- Chat sidebar with recent chats
-- User list with online status
-- Modern gradient-based UI
-- Smooth animations and transitions
+### 🎨 User Interface & Experience
+- **Responsive Design**: Optimized for mobile, tablet, and desktop devices
+- **Chat Sidebar**: Quick access to recent conversations
+- **User Directory**: Browse and search all available users
+- **Online Status Indicators**: Visual status badges for user availability
+- **Modern UI**: Gradient-based design with smooth animations
+- **Transition Effects**: Smooth page and message transitions
+- **Dark/Light Theme Ready**: CSS structure supports theme switching
 
-📱 **Responsive Design**
-- Mobile-friendly interface
-- Tablet optimized layout
-- Desktop version with full features
+### 📱 Cross-Platform Responsiveness
+- **Mobile Optimization**: Touch-friendly interface and small screen layouts
+- **Tablet Layout**: Optimized two-pane layout for tablets
+- **Desktop Experience**: Full-featured interface with additional features
+- **Flexible Grid System**: Responsive grid for different screen sizes
 
 ## Tech Stack
 
@@ -62,51 +74,72 @@ A full-featured real-time chat application built with MERN stack (MongoDB, Expre
 chat/
 ├── backend/
 │   ├── config/
+│   │   └── cloudinary.js
 │   ├── controllers/
 │   │   ├── authController.js
-│   │   ├── userController.js
 │   │   ├── messageController.js
-│   │   └── roomController.js
+│   │   ├── roomController.js
+│   │   └── userController.js
 │   ├── middleware/
 │   │   ├── auth.js
 │   │   └── validators.js
 │   ├── models/
-│   │   ├── User.js
 │   │   ├── Message.js
-│   │   └── Room.js
+│   │   ├── Room.js
+│   │   └── User.js
 │   ├── routes/
 │   │   ├── auth.js
-│   │   ├── users.js
+│   │   ├── clerk.js
 │   │   ├── messages.js
-│   │   └── rooms.js
+│   │   ├── rooms.js
+│   │   └── users.js
 │   ├── sockets/
 │   │   └── socketHandler.js
-│   ├── .env
-│   ├── .gitignore
+│   ├── utils/
+│   │   └── passwordHelper.js
+│   ├── Dockerfile
+│   ├── server.js
 │   ├── package.json
-│   └── server.js
+│   ├── .env
+│   └── .gitignore
 │
 └── frontend/
     ├── public/
     ├── src/
     │   ├── components/
-    │   │   ├── Auth.js
+    │   │   ├── AboutPage.jsx
+    │   │   ├── Auth.jsx
+    │   │   ├── Chat.jsx
+    │   │   ├── ForgetPassword.jsx
+    │   │   ├── HomePage.jsx
+    │   │   ├── Login.jsx
+    │   │   ├── LoginSignup.jsx
+    │   │   ├── Profile.jsx
+    │   │   ├── SignUp.jsx
+    │   │   ├── About.css
     │   │   ├── Auth.css
-    │   │   ├── Chat.js
-    │   │   └── Chat.css
+    │   │   ├── Chat.css
+    │   │   ├── ForgetPassword.css
+    │   │   ├── HomePage.css
+    │   │   └── LoginSignup.css
     │   ├── context/
-    │   │   ├── AuthContext.js
     │   │   └── SocketContext.js
     │   ├── services/
     │   │   └── api.js
+    │   ├── lib/
+    │   ├── assets/
     │   ├── App.js
     │   ├── App.css
     │   ├── index.js
-    │   └── index.css
-    ├── .env
-    ├── .gitignore
+    │   ├── index.css
+    │   ├── logo.svg
+    │   └── App.test.js
+    ├── Dockerfile
     ├── package.json
-    └── README.md
+    ├── tailwind.config.js
+    ├── postcss.config.js
+    ├── .env
+    └── .gitignore
 ```
 
 ## Installation & Setup
@@ -142,24 +175,489 @@ NODE_ENV=development
 ```bash
 mongod
 ```
+ (`/api/auth`)
 
-5. Run the backend server:
-```bash
-npm start
-# or for development with auto-reload
-npm run dev
+#### 1. Register User
+```
+POST /api/auth/register
+Content-Type: application/json
+
+Request Body:
+{
+  "username": "johndoe",
+  "email": "john@example.com",
+  "password": "securePassword123"
+}
+
+Response (201 Created):
+{
+  "success": true,
+  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "_id": "607f1f77bcf86cd799439011",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "avatar": "https://api.example.com/avatars/default.png",
+    "isOnline": false
+  }
+}
 ```
 
-Backend will be running on `http://localhost:5000`
+#### 2. Login User
+```
+POST /api/auth/login
+Content-Type: application/json
 
-### Frontend Setup
+Request Body:
+{
+  "email": "john@example.com",
+  "password": "securePassword123"
+}
 
-1. Navigate to frontend directory:
-```bash
-cd chat/frontend
+Response (200 OK):
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "_id": "607f1f77bcf86cd799439011",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "avatar": "https://api.example.com/avatars/johndoe.png",
+    "isOnline": true
+  }
+}
 ```
 
-2. Install dependencies:
+#### 3. Logout User
+```
+POST /api/auth/logout
+Authorization: Bearer {token}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+
+---
+
+### Users (`/api/users`)
+
+#### 1. Get All Users (Excluding Current User)
+```
+GET /api/users
+Authorization: Bearer {token}
+
+Query Parameters (optional):
+- page: 1 (default)
+- limit: 20 (default)
+
+Response (200 OK):
+{
+  "success": true,
+  "count": 15,
+  "users": [
+    {
+      "_id": "607f1f77bcf86cd799439012",
+      "username": "janedoe",
+      "email": "jane@example.com",
+      "avatar": "https://api.example.com/avatars/janedoe.png",
+      "isOnline": true,
+      "lastSeen": "2024-01-15T10:30:00Z"
+    },
+    ...
+  ]
+}
+```
+
+#### 2. Get Online Users
+```
+GET /api/users/online
+Authorization: Bearer {token}
+
+Response (200 OK):
+{
+  "success": true,
+  "onlineCount": 8,
+  "users": [
+    {
+      "_id": "607f1f77bcf86cd799439012",
+      "username": "janedoe",
+      "avatar": "https://api.example.com/avatars/janedoe.png",
+      "isOnline": true,
+      "connectedAt": "2024-01-15T10:15:00Z"
+    },
+    ...
+  ]
+}
+```
+
+#### 3. Search Users
+```
+GET /api/users/search?query=john
+Authorization: Bearer {token}
+
+Query Parameters:
+- query: "john" (search term)
+
+Response (200 OK):
+{
+  "success": true,
+  "results": 2,
+  "users": [
+    {
+      "_id": "607f1f77bcf86cd799439011",
+      "username": "johndoe",
+      "email": "john@example.com",
+      "avatar": "https://api.example.com/avatars/johndoe.png",
+      "isOnline": true
+    },
+    ...
+  ]
+}
+```
+
+#### 4. Get User by ID
+```
+GET /api/users/:id
+Authorization: Bearer {token}
+
+URL Parameters:
+- id: "607f1f77bcf86cd799439011"
+
+Response (200 OK):
+{
+  "success": true,
+  "user": {
+    "_id": "607f1f77bcf86cd799439011",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "avatar": "https://api.example.com/avatars/johndoe.png",
+    "isOnline": true,
+    "lastSeen": "2024-01-15T10:30:00Z",
+    "createdAt": "2024-01-01T08:00:00Z"
+  }
+}
+```
+
+#### 5. Get Recent Chats
+```
+GET /api/users/recent-chats
+Authorization: Bearer {token}
+
+Query Parameters (optional):
+- limit: 10 (default)
+
+Response (200 OK):
+{
+  "success": true,
+  "recentChats": [
+    {
+      "userId": "607f1f77bcf86cd799439012",
+      "username": "janedoe",
+      "lastMessage": "See you tomorrow!",
+      "lastMessageTime": "2024-01-15T14:20:00Z",
+      "unreadCount": 2
+    },
+    ...
+  ]
+}
+```
+
+#### 6. Update User Profile
+```
+PUT /api/users/profile/:id
+Authorization: Bearer {token}
+Content-Type: application/json
+
+URL Parameters:
+- id: "607f1f77bcf86cd799439011"
+
+Request Body:
+{
+  "username": "johndoe_updated",
+  "avatar": "https://api.example.com/avatars/new_avatar.png",
+  "status": "Available"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "user": {
+    "_id": "607f1f77bcf86cd799439011",
+    "username": "johndoe_updated",
+    "avatar": "https://api.example.com/avatars/new_avatar.png",
+    "status": "Available"
+  }
+}
+```
+
+---
+
+### Messages (`/api/messages`)
+
+#### 1. Get Private Messages with User
+```
+GET /api/messages/private/:userId
+Authorization: Bearer {token}
+
+URL Parameters:
+- userId: "607f1f77bcf86cd799439012"
+
+Query Parameters (optional):
+- page: 1 (default)
+- limit: 50 (default)
+
+Response (200 OK):
+{
+  "success": true,
+  "total": 125,
+  "messages": [
+    {
+      "_id": "607f1f77bcf86cd799439100",
+      "content": "Hey! How are you?",
+      "sender": {
+        "_id": "607f1f77bcf86cd799439011",
+        "username": "johndoe"
+      },
+      "receiver": {
+        "_id": "607f1f77bcf86cd799439012",
+        "username": "janedoe"
+      },
+      "timestamp": "2024-01-15T10:20:00Z",
+      "isRead": true
+    },
+    ...
+  ]
+}
+```
+
+#### 2. Get Room Messages
+```
+GET /api/messages/room/:roomId
+Authorization: Bearer {token}
+
+URL Parameters:
+- roomId: "607f1f77bcf86cd799439050"
+
+Query Parameters (optional):
+- page: 1 (default)
+- limit: 50 (default)
+
+Response (200 OK):
+{
+  "success": true,
+  "total": 342,
+  "roomName": "Project Team",
+  "messages": [
+    {
+      "_id": "607f1f77bcf86cd799439101",
+      "content": "Meeting notes attached",
+      "sender": {
+        "_id": "607f1f77bcf86cd799439011",
+        "username": "johndoe",
+        "avatar": "https://api.example.com/avatars/johndoe.png"
+      },
+      "room": "607f1f77bcf86cd799439050",
+      "timestamp": "2024-01-15T11:00:00Z",
+      "readBy": ["607f1f77bcf86cd799439012", "607f1f77bcf86cd799439013"]
+    },
+    ...
+  ]
+}
+```
+
+#### 3. Get Chat History (Paginated)
+```
+GET /api/messages/history
+Authorization: Bearer {token}
+
+Query Parameters:
+- page: 1 (default)
+- limit: 30 (default)
+- type: "all" | "private" | "room" (default: "all")
+
+Response (200 OK):
+{
+  "success": true,
+  "total": 567,
+  "page": 1,
+  "pages": 19,
+  "messages": [
+    {
+      "_id": "607f1f77bcf86cd799439102",
+      "content": "Message content here",
+      "sender": "johndoe",
+      "timestamp": "2024-01-15T12:15:00Z",
+      "type": "private"
+    },
+    ...
+  ]
+}
+```
+
+#### 4. Mark Message as Read
+```
+PUT /api/messages/read/:messageId
+Authorization: Bearer {token}
+
+URL Parameters:
+- messageId: "607f1f77bcf86cd799439100"
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Message marked as read",
+  "messageId": "607f1f77bcf86cd799439100"
+}
+```
+
+#### 5. Send Message
+```
+POST /api/messages
+Authorization: Bearer {token}
+Content-Type: application/json
+
+Request Body:
+{
+  "content": "Hello, how are you?",
+  "receiverId": "607f1f77bcf86cd799439012",
+  "roomId": null
+}
+
+Response (201 Created):
+{
+  "success": true,
+  "message": {
+    "_id": "607f1f77bcf86cd799439103",
+    "content": "Hello, how are you?",
+    "sender": "607f1f77bcf86cd799439011",
+    "receiver": "607f1f77bcf86cd799439012",
+    "timestamp": "2024-01-15T13:45:00Z",
+    "isRead": false
+  }
+}
+```
+
+#### 6. Delete Message
+```
+DELETE /api/messages/:messageId
+Authorization: Bearer {token}
+
+URL Parameters:
+- messageId: "607f1f77bcf86cd799439100"
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Message deleted successfully"
+}
+```
+
+---
+
+### Rooms (`/api/rooms`)
+
+#### 1. Get All Rooms
+```
+GET /api/rooms
+Authorization: Bearer {token}
+
+Response (200 OK):
+{
+  "success": true,
+  "rooms": [
+    {
+      "_id": "607f1f77bcf86cd799439050",
+      "name": "Project Team",
+      "description": "Discussion for Q1 project",
+      "members": 5,
+      "createdBy": "607f1f77bcf86cd799439011",
+      "createdAt": "2024-01-10T08:00:00Z"
+    },
+    ...
+  ]
+}
+```
+
+#### 2. Create Room
+```
+POST /api/rooms
+Authorization: Bearer {token}
+Content-Type: application/json
+
+Request Body:
+{
+  "name": "New Team",
+  "description": "New team collaboration room"
+}
+
+Response (201 Created):
+{
+  "success": true,
+  "room": {
+    "_id": "607f1f77bcf86cd799439051",
+    "name": "New Team",
+    "description": "New team collaboration room",
+    "members": 1,
+    "createdBy": "607f1f77bcf86cd799439011",
+    "createdAt": "2024-01-15T14:00:00Z"
+  }
+}
+```
+
+#### 3. Join Room
+```
+POST /api/rooms/:roomId/join
+Authorization: Bearer {token}
+
+URL Parameters:
+- roomId: "607f1f77bcf86cd799439050"
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Joined room successfully"
+}
+```
+
+#### 4. Leave Room
+```
+POST /api/rooms/:roomId/leave
+Authorization: Bearer {token}
+
+URL Parameters:
+- roomId: "607f1f77bcf86cd799439050"
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Left room successfully"
+}
+```
+
+---
+
+### Socket.IO Events
+
+#### Client → Server Events
+- `join-room` - Join a chat room
+- `leave-room` - Leave a chat room
+- `send-message` - Send a message
+- `typing` - User is typing
+- `stop-typing` - User stopped typing
+
+#### Server → Client Events
+- `user-joined` - User joined the room
+- `user-left` - User left the room
+- `new-message` - Receive new message
+- `user-typing` - Another user is typing
+- `user-online` - User came online
+- `user-offline` - User went offline
 ```bash
 npm install
 ```
