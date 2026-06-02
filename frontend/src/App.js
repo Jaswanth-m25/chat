@@ -16,7 +16,7 @@ import {
 } from "@clerk/clerk-react";
 
 import { SocketProvider } from './context/SocketContext';
-
+import AboutPage from './components/AboutPage';
 import LoginSignup from './components/LoginSignup';
 import HomePage from './components/HomePage';
 import { ChatApp } from './components/Chat';
@@ -130,7 +130,10 @@ function App() {
             </>
           }
         />
-
+        <Route
+  path="/about"
+  element={<AboutPage />}
+/>
         {/* Home Page */}
         <Route
           path="/"

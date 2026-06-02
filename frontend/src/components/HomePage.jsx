@@ -70,9 +70,12 @@ const HomePage = () => {
             >
               Get Started Now
             </button>
-            <button className="cta-btn secondary-btn">
-              Learn More
-            </button>
+<button
+  className="cta-btn secondary-btn"
+  onClick={() => navigate('/about')}
+>
+  Learn More
+</button>
           </div>
         </div>
 

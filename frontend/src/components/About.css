@@ -1,0 +1,216 @@
+/* Dark Blue Theme Theme Variables */
+:root {
+  --bg-dark-blue: #0b111e;
+  --bg-card-blue: #131c2e;
+  --bg-hover-blue: #1a263f;
+  --accent-cyan: #38bdf8;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-blue: #1e293b;
+}
+
+.about-container {
+  background-color: var(--bg-dark-blue);
+  color: var(--text-main);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Header styling */
+.about-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+  border-b: 1px solid var(--border-blue);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid var(--border-blue);
+  color: var(--text-muted);
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background-color: var(--bg-card-blue);
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.about-logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+  background: linear-gradient(to right, #ffffff, var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hero Section Styling */
+.about-hero {
+  text-align: center;
+  max-width: 750px;
+  margin: 5rem auto 4rem auto;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(56, 189, 248, 0.1);
+  color: var(--accent-cyan);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+}
+
+.about-hero h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.5rem;
+  line-height: 1.15;
+}
+
+.about-hero p {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+/* Value Grid Section */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto 5rem auto;
+}
+
+.value-card {
+  background-color: var(--bg-card-blue);
+  border: 1px solid var(--border-blue);
+  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.card-icon {
+  background-color: rgba(56, 189, 248, 0.08);
+  color: var(--accent-cyan);
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.value-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.value-card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Quote/Philosophy Panel Section */
+.about-quote-section {
+  max-width: 850px;
+  margin: 0 auto 6rem auto;
+  background: linear-gradient(135deg, var(--bg-card-blue), #0f172a);
+  border: 1px solid var(--border-blue);
+  padding: 3rem;
+  border-radius: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.about-blockquote p {
+  font-size: 1.4rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--text-main);
+  margin-bottom: 1rem;
+}
+
+.about-blockquote cite {
+  font-size: 0.95rem;
+  color: var(--accent-cyan);
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Footer & CTA buttons */
+.about-footer {
+  text-align: center;
+  border-top: 1px solid var(--border-blue);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 0;
+}
+
+.about-footer p {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.cta-btn {
+  background-color: var(--accent-cyan);
+  color: #040811;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.cta-btn:hover {
+  opacity: 0.9;
+}
+
+/* Responsive adjustment tweaks */
+@media (max-width: 640px) {
+  .about-hero h1 {
+    font-size: 2.2rem;
+  }
+  .about-quote-section {
+    padding: 2rem 1.5rem;
+  }
+  .about-blockquote p {
+    font-size: 1.15rem;
+  }
+}
