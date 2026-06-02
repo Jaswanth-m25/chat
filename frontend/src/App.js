@@ -1,21 +1,27 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate
+} from 'react-router-dom';
+
+import axios from 'axios';
+
+import {
+  useUser,
+  SignedIn,
+  SignedOut,
+  RedirectToSignIn
+} from "@clerk/clerk-react";
 
 import { SocketProvider } from './context/SocketContext';
 
 import LoginSignup from './components/LoginSignup';
 import HomePage from './components/HomePage';
 import { ChatApp } from './components/Chat';
-import { useUser } from "@clerk/clerk-react";
-import { useEffect } from "react";
-import axios from "axios";
-import './App.css';
 
-import {
-  SignedIn,
-  SignedOut,
-  RedirectToSignIn
-} from "@clerk/clerk-react";
+import './App.css';
 
 const ChatWithProviders = () => {
   return (
@@ -27,7 +33,7 @@ const ChatWithProviders = () => {
 
 function App() {
 
-  const { user, isSignedIn } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
 
   useEffect(() => {
 
@@ -47,19 +53,21 @@ function App() {
             email: user.primaryEmailAddress?.emailAddress,
             avatar: user.imageUrl
           }
-          
         );
+
         localStorage.setItem(
-  "mongoUser",
-  JSON.stringify(response.data.user)
-);
+          "mongoUser",
+          JSON.stringify(response.data.user)
+        );
 
         console.log(response.data);
 
       } catch (error) {
 
         console.error("SYNC ERROR", error);
+
       }
+
     };
 
     if (isSignedIn) {
@@ -68,7 +76,24 @@ function App() {
 
   }, [isSignedIn, user]);
 
-
+  // Prevent flicker while Clerk loads
+  if (!isLoaded) {
+    return (
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: '#0f172a',
+          color: 'white',
+          fontSize: '1.2rem'
+        }}
+      >
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <Router>
@@ -84,13 +109,13 @@ function App() {
               </SignedOut>
 
               <SignedIn>
-                <Navigate to="/chat" />
+                <Navigate to="/chat" replace />
               </SignedIn>
             </>
           }
         />
 
-        {/* Protected Chat Route */}
+        {/* Chat Page */}
         <Route
           path="/chat"
           element={
@@ -107,7 +132,14 @@ function App() {
         />
 
         {/* Home Page */}
-        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/"
+          element={
+            isSignedIn
+              ? <Navigate to="/chat" replace />
+              : <HomePage />
+          }
+        />
 
       </Routes>
     </Router>

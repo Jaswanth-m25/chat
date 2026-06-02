@@ -53,7 +53,7 @@
 }
 
 .logo-text {
-  background: linear-gradient(135deg, #8083ff 0%, #64b5f6 100%);
+  background: linear-gradient(135deg, rgb(20, 108, 155) 0%, #64b5f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -206,7 +206,7 @@
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #8083ff 0%, #6366ff 100%);
+  background: linear-gradient(135deg, #28bbdd 0%, rgb(99, 221, 255) 100%);
   color: white;
   box-shadow: 0 10px 30px rgba(128, 131, 255, 0.3);
 }

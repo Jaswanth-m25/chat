@@ -206,7 +206,7 @@
   padding: 0.5rem 0.75rem;
   background: var(--bg-tertiary);
   border: 2px solid var(--neon-blue);
-  border-radius: 0.75rem;
+  border-radius: 0.75rem rgb(57, 131, 151);
   color: var(--text-primary);
   font-weight: 700;
   width: 100%;
