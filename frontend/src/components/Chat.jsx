@@ -4,6 +4,7 @@ import { useSocket } from '../context/SocketContext';
 import { userService, messageService, roomService } from '../services/api';
 import {FiSend, FiUsers, FiLogOut, FiPaperclip, FiFile, FiUser, FiSearch, FiX } from 'react-icons/fi';
 import { FiMoreVertical, FiTrash2, FiSlash, FiXCircle } from 'react-icons/fi';
+import {  FiPlus } from 'react-icons/fi';
 import { FiChevronDown } from 'react-icons/fi';
 import { Profile } from './Profile';
 import './Chat.css';
@@ -735,17 +736,27 @@ setActiveChat({
           </div>
         </div>
 
-        <button
-          className="show-users-btn"
-          onClick={() => setShowUserList(!showUserList)}
-        >
-          {showUserList ? '✕ Close Users' : '+ Add Chat'}
-        </button>
+<button
+  className="show-users-btn"
+  onClick={() => setShowUserList(!showUserList)}
+>
+  {showUserList ? (
+    <>
+      <FiX />
+      Close Users
+    </>
+  ) : (
+    <>
+      <FiPlus />
+      Add Chat
+    </>
+  )}
+</button>
 
         {showUserList && (
           <div className="users-list-container">
             <div className="users-search">
-              <FiSearch className="search-icon" />
+              {/* <FiSearch className="search-icon" /> */}
               <input
                 type="text"
                 placeholder="Search users..."
