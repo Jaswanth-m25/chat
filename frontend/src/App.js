@@ -18,6 +18,7 @@ import {
 import { SocketProvider } from './context/SocketContext';
 import AboutPage from './components/AboutPage';
 import LoginSignup from './components/LoginSignup';
+import Signup from "./components/SignUp";
 import HomePage from './components/HomePage';
 import { ChatApp } from './components/Chat';
 
@@ -114,6 +115,20 @@ function App() {
             </>
           }
         />
+        <Route
+  path="/signup"
+  element={
+    <>
+      <SignedOut>
+        <Signup />
+      </SignedOut>
+
+      <SignedIn>
+        <Navigate to="/chat" />
+      </SignedIn>
+    </>
+  }
+/>
 
         {/* Chat Page */}
         <Route
