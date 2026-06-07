@@ -225,11 +225,11 @@ return (
         <div className="profile-stats">
           <div className="stat-item">
             <label>Member Since</label>
-            <p>{new Date(profile.createdAt).toLocaleDateString()}</p>
+            <p>{new Date(profile.createdAt).toLocaleDateString('en-GB')}</p>
           </div>
           <div className="stat-item">
             <label>Last Updated</label>
-            <p>{new Date(profile.updatedAt).toLocaleDateString()}</p>
+            <p>{new Date(profile.updatedAt).toLocaleDateString('en-GB')}</p>
           </div>
         </div>
       </div>
