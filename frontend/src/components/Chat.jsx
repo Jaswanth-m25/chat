@@ -600,7 +600,27 @@ setActiveChat({
     }
     return null;
   };
+const formatMessageDate = (date) => {
+  const msgDate = new Date(date);
+  const today = new Date();
 
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  if (msgDate.toDateString() === today.toDateString()) {
+    return "Today";
+  }
+
+  if (msgDate.toDateString() === yesterday.toDateString()) {
+    return "Yesterday";
+  }
+
+  return msgDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
   return (
     <div className="chat-container">
       {/* Sidebar */}
@@ -955,7 +975,14 @@ setActiveChat({
   msg.content?.toLowerCase().includes(messageSearch.toLowerCase())
 ).map((msg, idx) => {
                 const prevMsg = messages[idx - 1];
+const currentDate = new Date(msg.createdAt).toDateString();
 
+const prevDate = prevMsg
+  ? new Date(prevMsg.createdAt).toDateString()
+  : null;
+
+const showDateSeparator =
+  idx === 0 || currentDate !== prevDate;
 const currentSenderId = msg.senderId?._id || msg.senderId;
 
 const prevSenderId =
@@ -970,13 +997,20 @@ const isSent =
   senderId?.toString() === mongoUser?._id?.toString();
                 const senderUser = users.find(u => u._id === (msg.senderId?._id || msg.senderId));
                 
-                return (
-                  <div
-                    key={idx}
-                    className={`message ${isSent ? 'sent' : 'received'} ${
-  !showSenderInfo ? 'same-user' : ''
-}`}
-                  >
+return (
+  <React.Fragment key={msg._id || idx}>
+
+    {showDateSeparator && (
+      <div className="date-separator">
+        <span>{formatMessageDate(msg.createdAt)}</span>
+      </div>
+    )}
+
+    <div
+      className={`message ${isSent ? 'sent' : 'received'} ${
+        !showSenderInfo ? 'same-user' : ''
+      }`}
+    >
                     {!isSent && false && (
                       <div 
                         className="message-avatar"
@@ -1198,8 +1232,10 @@ const isSent =
 
 </p>
                     </div>
-                  </div>
-                );
+</div>
+
+</React.Fragment>
+);
               })}
               {typingUsers.length > 0 && (
                 <div className="typing-indicator">

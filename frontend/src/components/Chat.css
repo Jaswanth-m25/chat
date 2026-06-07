@@ -1187,3 +1187,18 @@
     transform: translateY(0);
   }
 }
+.date-separator {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 12px;
+}
+
+.date-separator span {
+  background: rgba(255,255,255,0.08);
+  color: #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
