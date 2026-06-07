@@ -927,17 +927,26 @@ setActiveChat({
 </div>
             </div>
 {showMessageSearch && (
-  <div className="px-6 py-3 border-b border-zinc-800 bg-zinc-900">
-    
+  <div className="message-search-container">
+    <FiSearch className="message-search-icon" />
+
     <input
       type="text"
       placeholder="Search messages..."
       value={messageSearch}
       onChange={(e) => setMessageSearch(e.target.value)}
-      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 outline-none text-white placeholder:text-zinc-400"
+      className="message-search-input"
       autoFocus
     />
 
+    {messageSearch && (
+      <button
+        className="message-search-clear"
+        onClick={() => setMessageSearch("")}
+      >
+        <FiX />
+      </button>
+    )}
   </div>
 )}
             <div className="messages">

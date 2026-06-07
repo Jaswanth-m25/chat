@@ -1117,3 +1117,73 @@
   color: var(--text-muted);
   font-size: 1rem;
 }
+.message-search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 450px;        /* instead of full width */
+  max-width: 90%;
+
+  margin: 12px auto;   /* center it */
+
+  padding: 10px 14px;
+
+  background: rgba(28, 31, 43, 0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  border-radius: 999px; /* pill shape */
+
+  backdrop-filter: blur(15px);
+
+  box-shadow: 0 8px 25px rgba(0,0,0,.25);
+}
+
+.message-search-icon {
+  color: #94a3b8;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.message-search-input {
+  flex: 1;
+
+  background: transparent;
+  border: none;
+  outline: none;
+
+  color: white;
+  font-size: 15px;
+}
+
+.message-search-input::placeholder {
+  color: #64748b;
+}
+
+.message-search-clear {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+}
+
+.message-search-clear:hover {
+  color: white;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
