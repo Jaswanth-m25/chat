@@ -201,21 +201,29 @@ if (activeUsers[receiverId]) {
 // }
         await message.populate('senderId', 'username avatar');
         await message.populate('receiverId', 'username avatar');
+        await message.populate({
+  path: 'replyTo',
+  populate: {
+    path: 'senderId',
+    select: 'username avatar'
+  }
+});
 
         // Create room for private chat
         const roomId = [socket.userId, receiverId].sort().join('-');
         socket.join(roomId);
 
         // Send to both users
-        io.to(roomId).emit('newPrivateMessage', {
-          _id: message._id,
-          senderId: message.senderId,
-          receiverId: message.receiverId,
-          content: message.content,
-          messageType: message.messageType,
-          createdAt: message.createdAt,
-          isRead: message.isRead
-        });
+io.to(roomId).emit('newPrivateMessage', {
+  _id: message._id,
+  senderId: message.senderId,
+  receiverId: message.receiverId,
+  content: message.content,
+  messageType: message.messageType,
+  createdAt: message.createdAt,
+  isRead: message.isRead,
+  replyTo: message.replyTo
+});
 
         // Notify receiver if online
         if (activeUsers[receiverId]) {

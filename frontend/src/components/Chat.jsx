@@ -54,7 +54,9 @@ export const ChatApp = () => {
   useEffect(() => {
     localStorage.setItem('unreadMessages', JSON.stringify(unreadMessages));
   }, [unreadMessages]);
-
+useEffect(() => {
+  setReplyingTo(null);
+}, [activeChat]);
   // Fetch initial data
   useEffect(() => {
     fetchUsers();
@@ -252,6 +254,7 @@ const handleReplyMessage = (message) => {
 };
 
 const handleCancelReply = () => {
+  console.log("Cancel Reply Clicked");
   setReplyingTo(null);
 };
   const fetchUsers = async () => {
@@ -341,9 +344,14 @@ if (socket) {
   };
 
   // Scroll to bottom on new message
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+useEffect(() => {
+  setTimeout(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end"
+    });
+  }, 50);
+}, [messages, replyingTo]);
 
   // Handle global chat messages
   useEffect(() => {
@@ -507,25 +515,30 @@ socket.on('messageReadReceipt', ({ messageId }) => {
 
 const handleUserClick = async (userId, username) => {
 
+  // Clear any active reply when switching chats
+  setReplyingTo(null);
+
+  // Clear unread count
   setUnreadMessages((prev) => ({
     ...prev,
     [userId]: 0
   }));
-  console.log(
-  "SETTING ACTIVE CHAT:",
-  userId
-);
 
-setActiveChat({
-  type: 'private',
-  userId
-});
+  console.log(
+    "SETTING ACTIVE CHAT:",
+    userId
+  );
+
+  setActiveChat({
+    type: 'private',
+    userId
+  });
+
   setShowUserList(false);
   setSearchTerm('');
 
   await fetchChatHistory('private', userId);
   await checkBlockedStatus(userId);
-  
 
   if (socket) {
     socket.emit('joinPrivateChat', { userId });
@@ -1267,13 +1280,14 @@ return (
                       {replyingTo.content?.length > 50 ? '...' : ''}
                     </p>
                   </div>
-                  <button 
-                    className="reply-preview-cancel"
-                    onClick={handleCancelReply}
-                    title="Cancel reply"
-                  >
-                    ✕
-                  </button>
+<button
+  className="reply-preview-cancel"
+  onClick={() => {
+    setReplyingTo(null);
+  }}
+>
+  X
+</button>
                 </div>
               )}
 

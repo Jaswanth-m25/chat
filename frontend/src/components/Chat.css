@@ -545,6 +545,7 @@
   gap: 4px; /* Default tight gap for sequential chats */
    position: relative;
   z-index: 1;
+  padding-bottom: 80px; /* Space for input area */
 }
 
 .message {
@@ -891,9 +892,10 @@
   backdrop-filter: blur(25px);
 
   border: 1px solid rgba(255,255,255,.08);
-
+  z-index: 10;
   display: flex;
   gap: 16px;
+  position: relative;
 }
 
 .message-input {
@@ -951,58 +953,81 @@
   cursor: not-allowed;
 }
 
-/* Reply Preview Panel above text bar dynamic display block */
 .reply-preview {
   position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  background-color: var(--bg-surface);
-  border-top: 1px solid var(--border-color);
-  padding: 0.6rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  animation: slideUp 0.2s ease-out;
-}
+  bottom: calc(100% + 10px);
 
-@keyframes slideUp {
-  from { transform: translateY(10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  left: 12px;
+  right: 12px;
+
+  z-index: 50;
+
+  background: #1c1f2b;
+
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 14px;
 }
 
 .reply-preview-content {
-  font-size: 0.85rem;
-  border-left: 3px solid var(--accent-color);
-  padding-left: 10px;
+  flex: 1;
   min-width: 0;
+  overflow: hidden;
+
+  border-left: 3px solid #2c6e9d;
+  padding-left: 12px;
 }
 
 .reply-preview-sender {
-  color: var(--accent-color);
-  margin-bottom: 2px;
+  color: #60a5fa;
+  font-size: 13px;
+  margin-bottom: 4px;
 }
 
 .reply-preview-text {
-  color: var(--text-secondary);
+  color: #cbd5e1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .reply-preview-cancel {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 1rem;
+  position: relative;
+  z-index: 999999;
+
+  width: 32px;
+  height: 32px;
+
+  min-width: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
-  padding: 4px;
+
+  background: rgba(255,255,255,0.08);
+  border: none;
+  border-radius: 50%;
+
+  color: white;
+
+  pointer-events: auto;
 }
 
 .reply-preview-cancel:hover {
-  color: var(--text-primary);
+  color: #ef4444;
 }
 
+.reply-preview-cancel:hover {
+  background: rgba(239,68,68,0.2);
+  color: #ef4444;
+}
 /* ==========================================================================
    Avatars & Online Presence Indicators 
    ========================================================================== */
