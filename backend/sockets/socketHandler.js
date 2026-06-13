@@ -199,31 +199,29 @@ if (activeUsers[receiverId]) {
 //   message.isDelivered = true;
 
 // }
-        await message.populate('senderId', 'username avatar');
-        await message.populate('receiverId', 'username avatar');
-        await message.populate({
-  path: 'replyTo',
-  populate: {
-    path: 'senderId',
-    select: 'username avatar'
-  }
-});
+const populatedMessage = await Message.findById(message._id)
+  .populate('senderId', 'username avatar')
+  .populate('receiverId', 'username avatar')
+  .populate({
+    path: 'replyTo',
+    populate: {
+      path: 'senderId',
+      select: 'username avatar'
+    }
+  });
 
-        // Create room for private chat
-        const roomId = [socket.userId, receiverId].sort().join('-');
-        socket.join(roomId);
+// Create room for private chat
+const roomId = [socket.userId, receiverId]
+  .sort()
+  .join('-');
 
-        // Send to both users
-io.to(roomId).emit('newPrivateMessage', {
-  _id: message._id,
-  senderId: message.senderId,
-  receiverId: message.receiverId,
-  content: message.content,
-  messageType: message.messageType,
-  createdAt: message.createdAt,
-  isRead: message.isRead,
-  replyTo: message.replyTo
-});
+socket.join(roomId);
+
+// Send fully populated message
+io.to(roomId).emit(
+  'newPrivateMessage',
+  populatedMessage
+);
 
         // Notify receiver if online
         if (activeUsers[receiverId]) {
